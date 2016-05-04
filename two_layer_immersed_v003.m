@@ -1,37 +1,36 @@
-function varargout = two_layer_immersed_v002(varargin)
+function varargout = two_layer_immersed_v003(varargin)
 % Shull research group. Original author: Chyi-Huey Joshua Yeh
-%This is another test
-% TWO_LAYER_IMMERSED_V002 MATLAB code for two_layer_immersed_v002.fig
-%      TWO_LAYER_IMMERSED_V002, by itself, creates a new TWO_LAYER_IMMERSED_V002 or raises the existing
+% TWO_LAYER_IMMERSED_V003 MATLAB code for two_layer_immersed_v003.fig
+%      TWO_LAYER_IMMERSED_V003, by itself, creates a new TWO_LAYER_IMMERSED_V003 or raises the existing
 %      singleton*.
 %
-%      H = TWO_LAYER_IMMERSED_V002 returns the handle to a new TWO_LAYER_IMMERSED_V002 or the handle to
+%      H = TWO_LAYER_IMMERSED_V003 returns the handle to a new TWO_LAYER_IMMERSED_V003 or the handle to
 %      the existing singleton*.
 %
-%      TWO_LAYER_IMMERSED_V002('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in TWO_LAYER_IMMERSED_V002.M with the given input arguments.
+%      TWO_LAYER_IMMERSED_V003('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in TWO_LAYER_IMMERSED_V003.M with the given input arguments.
 %
-%      TWO_LAYER_IMMERSED_V002('Property','Value',...) creates a new TWO_LAYER_IMMERSED_V002 or raises the
+%      TWO_LAYER_IMMERSED_V003('Property','Value',...) creates a new TWO_LAYER_IMMERSED_V003 or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before two_layer_immersed_v002_OpeningFcn gets called.  An
+%      applied to the GUI before two_layer_immersed_v003_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to two_layer_immersed_v002_OpeningFcn via varargin.
+%      stop.  All inputs are passed to two_layer_immersed_v003_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help two_layer_immersed_v002
+% Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 04-Nov-2015 17:14:11
+% Last Modified by GUIDE v2.5 04-May-2016 16:01:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @two_layer_immersed_v002_OpeningFcn, ...
-                   'gui_OutputFcn',  @two_layer_immersed_v002_OutputFcn, ...
+                   'gui_OpeningFcn', @two_layer_immersed_v003_OpeningFcn, ...
+                   'gui_OutputFcn',  @two_layer_immersed_v003_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -46,15 +45,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before two_layer_immersed_v002 is made visible.
-function two_layer_immersed_v002_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before two_layer_immersed_v003 is made visible.
+function two_layer_immersed_v003_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to two_layer_immersed_v002 (see VARARGIN)
+% varargin   command line arguments to two_layer_immersed_v003 (see VARARGIN)
 
-% Choose default command line output for two_layer_immersed_v002
+% Choose default command line output for two_layer_immersed_v003
 handles.output = hObject;
 
 %set default values or settings
@@ -63,7 +62,7 @@ handles=home_state(handles);
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes two_layer_immersed_v002 wait for user response (see UIRESUME)
+% UIWAIT makes two_layer_immersed_v003 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 function handles=home_state(handles)
@@ -175,7 +174,7 @@ uitable4_CellEditCallback(handles.uitable4, temp, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = two_layer_immersed_v002_OutputFcn(hObject, eventdata, handles) 
+function varargout = two_layer_immersed_v003_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
