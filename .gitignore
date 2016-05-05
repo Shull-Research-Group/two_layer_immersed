@@ -45,3 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Other files to ignore
+bisGMA_N2_rt_processed.mat
+ms1002 in situ 80C run 2 part1.mat
+read4_bulk_25C_processed.mat
+test2.mat
+test3.mat
+test4.mat
