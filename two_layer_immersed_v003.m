@@ -1,5 +1,6 @@
 function varargout = two_layer_immersed_v003(varargin)
 % Shull research group. Original author: Chyi-Huey Joshua Yeh
+%This version is currently in beta mode
 % TWO_LAYER_IMMERSED_V003 MATLAB code for two_layer_immersed_v003.fig
 %      TWO_LAYER_IMMERSED_V003, by itself, creates a new TWO_LAYER_IMMERSED_V003 or raises the existing
 %      singleton*.
