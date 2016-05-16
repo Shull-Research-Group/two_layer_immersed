@@ -1803,14 +1803,9 @@ guidata(hObject,handles);
 function sim_Callback(hObject, eventdata, handles)%This function adds a simulate button functionality
 visco_table=get(handles.uitable2,'data');%extract the viscoelastic information
 input_table=get(handles.uitable4,'data');%extract the input viscoelastic information
-drho=input_table{1,2};%drho in g/m^2
-phi=input_table{2,2};%phi in deg.
-grho=input_table{3,2};%grho in Pa-g/cm^3
-d2lam=input_table{4,2};%film thickness to shearwavelength ratio
-fn=[5 15 25 35 45 55].*1e6;%frequencies for odd harmonics from 1 to 6
-for dum=1:length(fn)
-    
-end
+drho=input_table{1,2};
+phi=input_table{2,2};
+grh
 
 % --------------------------------------------------------------------
 function viewraw_ClickedCallback(hObject, eventdata, handles)
