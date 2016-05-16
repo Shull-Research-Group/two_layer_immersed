@@ -24,7 +24,7 @@ function varargout = two_layer_immersed_v003(varargin)
 
 % Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 04-May-2016 16:01:18
+% Last Modified by GUIDE v2.5 16-May-2016 15:21:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1799,6 +1799,9 @@ handles.din.guess_label=rand(1);%"relabel" the guess parameters, this signals th
 handles.din.guess_label2=rand(1);
 guidata(hObject,handles);
 
+% --- Executes on button press in sim.
+function sim_Callback(hObject, eventdata, handles)%This function
+
 
 % --------------------------------------------------------------------
 function viewraw_ClickedCallback(hObject, eventdata, handles)
@@ -2751,3 +2754,6 @@ function fcns=lfun4_both_3(p,x)%this fucntion fits 3 peaks (cond and sus)
 
 %p(16): Offset value (susceptance) (1)   p(17): Offsetvalue(susceptance)(2)       p(18): offset value (susceptance) (3)
 fcns=[lfun4c_3(p(1:15),x),lfun4s_3([p(1:4),p(16),p(6:9),p(17),p(11:14),p(18)],x)];
+
+
+
