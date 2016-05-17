@@ -24,7 +24,7 @@ function varargout = two_layer_immersed_v003(varargin)
 
 % Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 16-May-2016 15:21:25
+% Last Modified by GUIDE v2.5 17-May-2016 11:05:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -89,6 +89,8 @@ handles.din.constants.del_g_5_e=50;%default error (Hz)
 handles.din.constants.del_g_7_e=70;%default error (Hz)
 handles.din.constants.del_g_9_e=90;%default error (Hz)
 handles.din.constants.del_g_11_e=110;%default error (Hz)
+handles.din.rawdata.immersed_freq=[];
+handles.din.rawdata.immersed_diss=[];
 handles.din.simulate=0;
 handles.din.bare_flag=0;%this is flag, showing that the bare cyrstal data was not loaded
 handles.din.bare_path=pwd;%create a fieldname for the path destination of the bare crystal file
@@ -1013,6 +1015,43 @@ catch err_message
     return
 end%try
 
+
+
+% --------------------------------------------------------------------
+function immersed_bare_xtal_ClickedCallback(hObject, eventdata, handles)
+% This fcn accepts an immersed bare xtal file (bare xtal immersed in a
+% semi-infinite layer). An average is taken for each harmonic and the
+% values are set for the dissipation shift associated with the approprate
+% harmonic for the semi-infinite medium.
+disp('Importing immersed bare .mat file');
+set(handles.status,'string','Status: Importing immersed bare crystal .mat file');
+[filename,pathfile,~]=uigetfile('.mat', 'Load bare crystal datafile',handles.din.bare_path);%prompt user to choose the bare crystal file
+set(handles.status,'string','Status: Importing .mat file...');drawnow;
+if isempty(filename)%run this code if the user cancels out of loading the bare crystal file
+    set(handles.status,'string','Status: Unable to load bare crystal datafile',...
+        'foregroundcolor','k','backgroundcolor','r');
+    return
+end%if isempty(filename)
+try
+    load([pathfile,filename]);%load the datafile
+    for dum1=2:size(abs_freq,2)%find the number of columns in the abs_freq variable loaded from the bare crystal file and calculate the average
+        temp=abs_freq(:,dum1);%extract out the designated column
+        if mod(dum1,2)==0&&isnan(nanmean(temp))==0%if the column is associated with delta f
+            handles.din.rawdata.immersed_freq(dum1/2)=nanmean(temp);%calculate the average and store the immersed harmonic frequencies
+        elseif mod(dum1,2)==1&&isnan(nanmean(temp))==0%if the column is associated with delta gamma
+            handles.din.rawdata.immersed_diss((dum1-1)/2)=nanmean(temp);%calculate the average and store th immersed harmonic dissipations
+        end%if mod(dum1,2)==0&&isnan(mean(temp))==0%if the column is associated with delta f
+    end%for dum1=2:size(abs_freq,2)
+    index=(str2double(get(handles.dgliq_harm,'string'))+1)/2;
+    set(handles.dgliq,'string',handles.din.rawdata.immersed_diss(index));
+catch err_message
+    assignin('base','err_message',err_message);
+    set(handles.status,'string','Status: Error in loading immersed bare crystal file!');
+    disp('Error in loading immersed bare crystal file!');
+    return
+end%try
+guidata(handles.figure1,handles);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %THIS SECTION DEALS WITH CALLBACK FUNCTIONS ASSOCIATED WITH THE CALCULATION
 %OPTIONS PANEL
@@ -1068,6 +1107,8 @@ guidata(hObject,handles);
 function dgliq_harm_Callback(hObject, ~, handles)
 handles.din.guess_label=rand(1);%"relabel" the guess parameters, this signals the contour callback function to recalculate the harm/diss ratio matrices
 handles.din.guess_label2=rand(1);%"relabel" the guess parameters
+index=(str2double(get(hObject,'string'))+1)/2;
+set(handles.dgliq,'string',handles.din.rawdata.immersed_diss(index));
 guidata(hObject,handles);
 
 function edit_drho_Callback(hObject, ~, handles)
@@ -2792,6 +2833,8 @@ function fcns=lfun4_both_3(p,x)%this fucntion fits 3 peaks (cond and sus)
 
 %p(16): Offset value (susceptance) (1)   p(17): Offsetvalue(susceptance)(2)       p(18): offset value (susceptance) (3)
 fcns=[lfun4c_3(p(1:15),x),lfun4s_3([p(1:4),p(16),p(6:9),p(17),p(11:14),p(18)],x)];
+
+
 
 
 

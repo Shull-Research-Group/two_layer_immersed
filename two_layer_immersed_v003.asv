@@ -24,7 +24,7 @@ function varargout = two_layer_immersed_v003(varargin)
 
 % Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 16-May-2016 15:21:25
+% Last Modified by GUIDE v2.5 17-May-2016 11:05:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1013,6 +1013,11 @@ catch err_message
     return
 end%try
 
+
+% --------------------------------------------------------------------
+function immersed_bare_xtal_ClickedCallback(hObject, eventdata, handles)
+% This fcn accepfts 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %THIS SECTION DEALS WITH CALLBACK FUNCTIONS ASSOCIATED WITH THE CALCULATION
 %OPTIONS PANEL
@@ -1494,7 +1499,7 @@ for dum0=1:length(radiotot)
         output.residual=residual;%stores the value of the residual at the solution x
         output.jacobian=jacobian;%store the jacobian matrix from fsolve
         output.exitflag=exitflag;%store the exitflag that was outputed from fsolve
-        disp(['exitflag: ',num2str(exitflag),', resnorm: ',num2str(resnorm),', # of pts solved: ',num2str(count),', dataset: ',num2str(n1)]);
+        disp(['exitflag: ',num2str(exitflag),', resnorm: ',num2str(resnorm),', # of pts solved: ',num2str(count),', dataset: ',num2str(n1),num2str(n2),num2str(n3)]);
         if exitflag~=1&&resnorm>7e-5%stop the code if the exitflag is not 1 or if the sum of the squares of the residuals are greater than 1e-10
             set(handles.status,'string','Status: Exitflag is not 1!','backgroundcolor','y','foregroundcolor','r');
             disp('Exitflag is not 1!');
@@ -1820,7 +1825,7 @@ for dum0=1:length(radiotot)
     z_star_liq_n=zqliq_n_calc(dfliq_n,dgliq_n,f1,zq);%calc the liq load impedance at dgliq_harm
     dgliq_harm=str2double(get(handles.dgliq_harm,'string'));%harmonic in which the liq load impedance was calc at
     [n1,n2,n3]=determine_harm_choice(harmchoice(dum0));%determine what harmonic datasets will be used to calculate viscoelastic parameters    
-    unique_n=1:2:11;
+    unique_n=1:2:51;
     for dum=1:length(unique_n)
         name=['n_',num2str(unique_n(dum)),'_',num2str(n1),num2str(n2),num2str(n3)];%nomenclature: n_<harmonic in which values are calc. at>_<harm used to calc properties>
         handles.din.solved.(name).drho=drho;
@@ -2792,6 +2797,8 @@ function fcns=lfun4_both_3(p,x)%this fucntion fits 3 peaks (cond and sus)
 
 %p(16): Offset value (susceptance) (1)   p(17): Offsetvalue(susceptance)(2)       p(18): offset value (susceptance) (3)
 fcns=[lfun4c_3(p(1:15),x),lfun4s_3([p(1:4),p(16),p(6:9),p(17),p(11:14),p(18)],x)];
+
+
 
 
 
