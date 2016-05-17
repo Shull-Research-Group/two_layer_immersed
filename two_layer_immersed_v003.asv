@@ -89,6 +89,7 @@ handles.din.constants.del_g_5_e=50;%default error (Hz)
 handles.din.constants.del_g_7_e=70;%default error (Hz)
 handles.din.constants.del_g_9_e=90;%default error (Hz)
 handles.din.constants.del_g_11_e=110;%default error (Hz)
+handles.din.simulate=0;
 handles.din.bare_flag=0;%this is flag, showing that the bare cyrstal data was not loaded
 handles.din.bare_path=pwd;%create a fieldname for the path destination of the bare crystal file
 handles.din.n1=3;%harmonic order in which solution will be calculated at
@@ -1446,10 +1447,10 @@ function handles=qcm_solver(handles,count)
 [radiotot,harmchoice]=radio_total(handles);%determine how many datasets and which harmonics that will be used to perform the calculation
 f1=handles.din.constants.f1;%fundamentalr resonance freq in Hz
 zq=handles.din.constants.zq;% the quartz load impedance
-for dum=1:length(radiotot)
+for dum0=1:length(radiotot)
     calc_table=nan(6,9);    %preallocate the calculation table
-    handles.din.solved.harmchoice=harmchoice(dum);
-    [n1,n2,n3]=determine_harm_choice(harmchoice(dum));%determine what harmonic datasets will be used to calculate viscoelastic parameters
+    handles.din.solved.harmchoice=harmchoice(dum0);
+    [n1,n2,n3]=determine_harm_choice(harmchoice(dum0));%determine what harmonic datasets will be used to calculate viscoelastic parameters
     %calculate the liquid load impedance
     dgliq_n=str2double(get(handles.dgliq,'string'));%diss shift used for liq load impedance calc
     dfliq_n=-dgliq_n;%freq shift used for liq load impedance calc
@@ -1493,7 +1494,7 @@ for dum=1:length(radiotot)
         output.residual=residual;%stores the value of the residual at the solution x
         output.jacobian=jacobian;%store the jacobian matrix from fsolve
         output.exitflag=exitflag;%store the exitflag that was outputed from fsolve
-        disp(['exitflag: ',num2str(exitflag),', resnorm: ',num2str(resnorm),', # of pts solved: ',num2str(count)]);
+        disp(['exitflag: ',num2str(exitflag),', resnorm: ',num2str(resnorm),', # of pts solved: ',num2str(count),', dataset: ',num2str(n1)]);
         if exitflag~=1&&resnorm>7e-5%stop the code if the exitflag is not 1 or if the sum of the squares of the residuals are greater than 1e-10
             set(handles.status,'string','Status: Exitflag is not 1!','backgroundcolor','y','foregroundcolor','r');
             disp('Exitflag is not 1!');
@@ -1626,7 +1627,7 @@ function handles=calc_viscoelastic_par(handles,n1,f1,z_star_liq_n,zq,solved,dgli
 [nc1,nc2,nc3]=determine_harm_choice(handles.din.solved.harmchoice);%determine what harmonics are being used to calculate the viscoelastic parameters
 handles.din.solved.(name).d2lam=d2lam_n2_calc(solved(1),n0,n1,solved(2));%store the d2lambda ratio at n1
 handles.din.solved.(name).norm_delfstar=master(handles.din.solved.(name).d2lam,solved(2),zqliq_n2_calc(z_star_liq_n,dgliq_harm,n1),f1*n1,solved(3));%normalized complex frequency shift at harmonic n1
-if sum([nc1==n1,nc2==n1,nc3==n1])==0%if n1 is not one of the harmonics that are being used to calculate the viscoeasltic parameters, use the calculated areal mass at nc1 to predict the frequency shift. 
+if sum([nc1==n1,nc2==n1,nc3==n1])==0||handles.din.simulate==1%if n1 is not one of the harmonics that are being used to calculate the viscoeasltic parameters, use the calculated areal mass at nc1 to predict the frequency shift. 
     %This prevents the predicted freq shift from being the same as the exp. freq shift    
     name0=['n_',num2str(nc1),'_',num2str(nc1),num2str(nc2),num2str(nc3)];%nomenclature: n_<n1>_<harm used to calc properties>
     handles.din.solved.(name).drho=handles.din.solved.(name0).drho;%calculate drho for harmonic nc1 that was used in g/m^2    
@@ -1801,11 +1802,44 @@ guidata(hObject,handles);
 
 % --- Executes on button press in sim.
 function sim_Callback(hObject, eventdata, handles)%This function adds a simulate button functionality
+handles.din.simulate=1;
 visco_table=get(handles.uitable2,'data');%extract the viscoelastic information
 input_table=get(handles.uitable4,'data');%extract the input viscoelastic information
-drho=input_table{1,2};
-phi=input_table{2,2};
-grh
+drho=input_table{1,2};%drho in g/m^2
+phi=input_table{2,2};%phi in deg.
+grho=input_table{3,2};%grho in Pa-g/cm^3
+d2lam=input_table{4,2};%film thickness to shearwavelength ratio
+f1=handles.din.constants.f1;%fundamentalr resonance freq in Hz
+zq=handles.din.constants.zq;% the quartz load impedance
+[radiotot,harmchoice]=radio_total(handles);%determine how many datasets and which harmonics that will be used to perform the calculation
+for dum0=1:length(radiotot)
+    handles.din.solved.harmchoice=harmchoice(dum0);
+    %calculate the liquid load impedance
+    dgliq_n=str2double(get(handles.dgliq,'string'));%diss shift used for liq load impedance calc
+    dfliq_n=-dgliq_n;%freq shift used for liq load impedance calc
+    z_star_liq_n=zqliq_n_calc(dfliq_n,dgliq_n,f1,zq);%calc the liq load impedance at dgliq_harm
+    dgliq_harm=str2double(get(handles.dgliq_harm,'string'));%harmonic in which the liq load impedance was calc at
+    [n1,n2,n3]=determine_harm_choice(harmchoice(dum0));%determine what harmonic datasets will be used to calculate viscoelastic parameters    
+    unique_n=1:2:11;
+    for dum=1:length(unique_n)
+        name=['n_',num2str(unique_n(dum)),'_',num2str(n1),num2str(n2),num2str(n3)];%nomenclature: n_<harmonic in which values are calc. at>_<harm used to calc properties>
+        handles.din.solved.(name).drho=drho;
+        handles=calc_viscoelastic_par(handles,unique_n(dum),f1,z_star_liq_n,zq,[d2lam phi drho],dgliq_harm,name,n1);%calculate the viscoelastic parameters
+        %store the calculated values in a matrix that will be used to output the results in the handles.uitable2
+        calc_table((unique_n(dum)+1)/2,:)=[handles.din.solved.(name).drho,handles.din.solved.(name).grho,handles.din.solved.(name).phi,...
+            handles.din.solved.(name).d2lam,handles.din.solved.(name).lam_rho,real(handles.din.solved.(name).norm_delfstar),...
+            imag(handles.din.solved.(name).norm_delfstar),abs(handles.din.solved.(name).cf),handles.din.solved.(name).del2d];
+        %store the predicted freq shifts in a matrix that will be used to output the results in the handles.uitable3
+        pred_shifts((unique_n(dum)+1)/2,:)=[nan,real(handles.din.solved.(name).complex_pred_freq),...
+            nan,imag(handles.din.solved.(name).complex_pred_freq)];
+    end
+    %update the data tables int he gui
+    set(handles.uitable2,'data',calc_table);%update the viscoelastic parameter table
+    set(handles.uitable3,'data',pred_shifts);%update the predicted frequency shift table     
+    set(handles.status,'string',['Status: Simulation complete for ',num2str(n1),num2str(n2),num2str(n3)]);
+end
+handles.din.simulate=0;
+guidata(handles.figure1,handles);
 
 % --------------------------------------------------------------------
 function viewraw_ClickedCallback(hObject, eventdata, handles)
