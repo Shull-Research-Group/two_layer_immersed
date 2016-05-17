@@ -1037,13 +1037,13 @@ try
     for dum1=2:size(abs_freq,2)%find the number of columns in the abs_freq variable loaded from the bare crystal file and calculate the average
         temp=abs_freq(:,dum1);%extract out the designated column
         if mod(dum1,2)==0&&isnan(nanmean(temp))==0%if the column is associated with delta f
-            handles.din.rawdata.immersed_freq(dum1/2)=nanmean(temp);%calculate the average and store the immersed harmonic frequencies
+            handles.din.immersed.immersed_freq(dum1/2)=nanmean(temp);%calculate the average and store the immersed harmonic frequencies
         elseif mod(dum1,2)==1&&isnan(nanmean(temp))==0%if the column is associated with delta gamma
-            handles.din.rawdata.immersed_diss((dum1-1)/2)=nanmean(temp);%calculate the average and store th immersed harmonic dissipations
+            handles.din.immersed.immersed_diss((dum1-1)/2)=nanmean(temp);%calculate the average and store th immersed harmonic dissipations
         end%if mod(dum1,2)==0&&isnan(mean(temp))==0%if the column is associated with delta f
     end%for dum1=2:size(abs_freq,2)
     index=(str2double(get(handles.dgliq_harm,'string'))+1)/2;
-    set(handles.dgliq,'string',handles.din.rawdata.immersed_diss(index));
+    set(handles.dgliq,'string',handles.din.immersed.immersed_diss(index));
 catch err_message
     assignin('base','err_message',err_message);
     set(handles.status,'string','Status: Error in loading immersed bare crystal file!');
@@ -1108,7 +1108,7 @@ function dgliq_harm_Callback(hObject, ~, handles)
 handles.din.guess_label=rand(1);%"relabel" the guess parameters, this signals the contour callback function to recalculate the harm/diss ratio matrices
 handles.din.guess_label2=rand(1);%"relabel" the guess parameters
 index=(str2double(get(hObject,'string'))+1)/2;
-set(handles.dgliq,'string',handles.din.rawdata.immersed_diss(index));
+set(handles.dgliq,'string',handles.din.immersed.immersed_diss(index));
 guidata(hObject,handles);
 
 function edit_drho_Callback(hObject, ~, handles)
