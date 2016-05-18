@@ -24,7 +24,7 @@ function varargout = two_layer_immersed_v003(varargin)
 
 % Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 17-May-2016 11:05:20
+% Last Modified by GUIDE v2.5 18-May-2016 16:01:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -266,6 +266,111 @@ initial_time_Callback(handles.initial_time, 1, handles);
 extent_Callback(handles.extent, 1, handles);
 guidata(hObject,handles);
 
+% --- Executes on button press in MS.
+function MS_Callback(hObject, eventdata, handles)
+clf(figure(99));
+set(figure(99),'menubar','none','name','Settings for generating Material Space Plots',...
+    'numbertitle','off');
+drho_min=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
+    'position',[0.21 0.901 0.15 0.05]);
+drho_max=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
+    'position',[0.21 0.851 0.15 0.05]);
+phi_min=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
+    'position',[0.21 0.751 0.15 0.05]);
+phi_max=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
+    'position',[0.21 0.701 0.15 0.05]);
+grho_min=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
+    'position',[0.21 0.601 0.15 0.05],'foregroundcolor','r');
+grho_max=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
+    'position',[0.21 0.551 0.15 0.05],'foregroundcolor','r');
+d2lam_min=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
+    'position',[0.21 0.451 0.15 0.05]);
+d2lam_max=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
+    'position',[0.21 0.401 0.15 0.05]);
+delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
+    'position',[0.21 0.301 0.15 0.05]);
+delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
+    'position',[0.21 0.251 0.15 0.05]);
+drho_min_txt=uicontrol('style','text','units','normalized','string','drho min:',...
+    'position',[0.05 0.9 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+drho_max_txt=uicontrol('style','text','units','normalized','string','drho max:',...
+    'position',[0.05 0.85 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+phi_min_txt=uicontrol('style','text','units','normalized','string','phi min:',...
+    'position',[0.05 0.75 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+phi_max_txt=uicontrol('style','text','units','normalized','string','phi max:',...
+    'position',[0.05 0.7 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+grho_min_txt=uicontrol('style','text','units','normalized','string','grho min:',...
+    'position',[0.05 0.6 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right',...
+    'foregroundcolor','r');
+grho_max_txt=uicontrol('style','text','units','normalized','string','grho max:',...
+    'position',[0.05 0.55 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right',...
+    'foregroundcolor','r');
+d2lam_min_txt=uicontrol('style','text','units','normalized','string','d2lam min:',...
+    'position',[0.05 0.45 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+d2lam_max_txt=uicontrol('style','text','units','normalized','string','d2lam max:',...
+    'position',[0.05 0.4 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+delf_max_txt=uicontrol('style','text','units','normalized','string','\Deltaf max:',...
+    'position',[0.05 0.3 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+delg_max_txt=uicontrol('style','text','units','normalized','string','\Deltag max:',...
+    'position',[0.05 0.25 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
+plot_button=uicontrol('style','pushbutton','units','normalized','string','Plot',...
+    'fontsize',10,'fontweight','bold','backgroundcolor',[0.7 0.7 0.7]);
+set(grho_min,'callback',{@d2lam_calc,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
+set(grho_max,'callback',{@d2lam_calc,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
+set(d2lam_min,'callback',{@grho_calc2,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
+set(d2lam_max,'callback',{@grho_calc2,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
+
+function grho_calc2(hObject,~,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt)
+%minimum calculation
+phi_val_min=str2double(phi_min.String);%phi (deg.)
+drho_val_min=str2double(drho_min.String)./1000;%areal mass (kg/m^2)
+d2lam_val_min=str2double(d2lam_min.String);
+f1=handles.din.constants.f1;%fundamental resonance frequency
+grho_val_min=(((drho_val_min./d2lam_val_min).*f1.*1.*cosd(phi_val_min./2)).^2)./1000;%calc. the grho value
+set(grho_min,'string',grho_val_min,'ForegroundColor','r');
+grho_min_txt.ForegroundColor='r';
+hObject.ForegroundColor='k';
+d2lam_min_txt.ForegroundColor='k';
+%maximum calculation
+phi_val_max=str2double(phi_max.String);%phi (deg.)
+drho_val_max=str2double(drho_max.String)./1000;%areal mass (kg/m^2)
+d2lam_val_max=str2double(d2lam_max.String);
+f1=handles.din.constants.f1;%fundamental resonance frequency
+grho_val_max=(((drho_val_max./d2lam_val_max).*f1.*1.*cosd(phi_val_max./2)).^2)./1000;%calc. the grho value
+set(grho_max,'string',grho_val_max,'ForegroundColor','r');
+grho_max_txt.ForegroundColor='r';
+hObject.ForegroundColor='k';
+d2lam_max_txt.ForegroundColor='k';
+
+function d2lam_calc(hObject,~,handles,drho_min,drho_max,phi_min,phi_max,...
+    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt)
+%minimum calculation
+phi_val_min=str2double(phi_min.String);%phi (deg.)
+drho_val_min=str2double(drho_min.String)./1000;%areal mass (kg/m^2)
+grho_val_min=str2double(grho_min.String).*1000;%grho values (Pa-kg/m^3)
+f1=handles.din.constants.f1;%fundamental resonance frequency
+d2lam_val_min=(drho_val_min.*f1.*1.*cosd(phi_val_min./2))./(sqrt(grho_val_min));%calc. the d2lam value
+d2lam_min.String=d2lam_val_min;
+d2lam_min.ForegroundColor='r';
+hObject.ForegroundColor='k';
+grho_min_txt.ForegroundColor='k';
+d2lam_min_txt.ForegroundColor='r';
+%maximum calculation
+phi_val_max=str2double(phi_max.String);%phi (deg.)
+drho_val_max=str2double(drho_max.String)./1000;%areal mass (kg/m^2)
+grho_val_max=str2double(grho_max.String).*1000;%grho values (Pa-kg/m^3)
+f1=handles.din.constants.f1;%fundamental resonance frequency
+d2lam_val_max=(drho_val_max.*f1.*1.*cosd(phi_val_max./2))./(sqrt(grho_val_max));%calc. the d2lam value
+d2lam_max.String=d2lam_val_max;
+d2lam_max.ForegroundColor='r';
+hObject.ForegroundColor='k';
+grho_max_txt.ForegroundColor='k';
+d2lam_max_txt.ForegroundColor='r';
 
 function contour_Callback(hObject, ~, handles)
 %This function creates contour plots of the master function.
@@ -1279,7 +1384,7 @@ function handles=grho_guess_Callback(hObject, ~, handles)
 data=get(handles.uitable4,'data');%extract out values from guess table
 phi=cell2mat(data(2,2));%phi (deg.)
 drho=cell2mat(data(1,2))./1000;%areal mass, drho (kg/m^2)
-grho=cell2mat(data(3,2)).*1000;%grho values (Pa-kg/m^3
+grho=cell2mat(data(3,2)).*1000;%grho values (Pa-kg/m^3)
 f1=handles.din.constants.f1;%fundamental resonance frequency
 d2lam=(drho.*f1.*1.*cosd(phi./2))./(sqrt(grho));%calc. the d2lam value
 data{4,1}='<HTML><body text=#FF0000><b>d/&lambda;</b></body></html>';
@@ -2833,6 +2938,9 @@ function fcns=lfun4_both_3(p,x)%this fucntion fits 3 peaks (cond and sus)
 
 %p(16): Offset value (susceptance) (1)   p(17): Offsetvalue(susceptance)(2)       p(18): offset value (susceptance) (3)
 fcns=[lfun4c_3(p(1:15),x),lfun4s_3([p(1:4),p(16),p(6:9),p(17),p(11:14),p(18)],x)];
+
+
+
 
 
 
