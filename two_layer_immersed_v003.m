@@ -69,12 +69,23 @@ guidata(hObject, handles);
 function handles=home_state(handles)
 %This function contains all of the default settings of the GUI.
 cla(handles.axes1);cla(handles.axes2);
+filepath=[];
+if isfield(handles,'din')==true
+    if isfield(handles.din,'filepath')==true
+        filepath=handles.din.filepath;
+    end
+end
 handles.din=[];
+if isempty(filepath)==0
+    handles.din.filepath=filepath;
+end
 %set default values or settings
 warning('off','MATLAB:legend:IgnoringExtraEntries');%suppress warning messages associated with havein extra legend entries
 handles.din.marker_color=[{[0 0 1]} {[1 0 0]} {[0 0.5 0]} {[0.5 0.5 0]} {[0 0.5 0.5]} {[0.5 0 0.5]}];%set marker colors
 handles.din.marker_style=[{['+']} {['o']} {['s']} {['^']} {['v']} {['x']}];%set marker style
-handles.din.filepath=pwd;%set default working path directory
+if isfield(handles.din,'filepath')==false
+    handles.din.filepath=pwd;%set default working path directory
+end
 handles.din.constants.f1=5e6;%fundamental resonance frequency in Hz
 handles.din.constants.zq=8.84e6; %load impedance of quartz, kg/m^2-s
 handles.din.constants.del_f_1_e=10;%default error (Hz) 
@@ -128,7 +139,7 @@ handles.din.contour.diss_ratio_calc=ones(handles.din.contour.res,handles.din.con
 handles.din.qcm_map=ones(handles.din.contour.res,handles.din.contour.res);%allocate the matrix for the qcm map
 handles.din.grho_state=1;
 handles.din.d2lam_state=0;
-handles.din.fit_options=optimset('Display','off','tolfun',1e-11,'tolx',1e-8,'Maxiter',100000,'MaxFunEvals',100000);
+handles.din.fit_options=optimset('Display','off','tolfun',1e-11,'tolx',1e-11,'Maxiter',100000,'MaxFunEvals',100000);
 set(handles.viewraw,'userdata',[],'tooltipstring',['view raw spectra']);
 set(handles.harm1,'value',1);
 set(handles.harm3,'value',1);
@@ -194,12 +205,16 @@ function load_Callback(hObject, eventdata, handles)
 %This function loads the frequency shift data (shift in the location of the
 %resonance peak and the shift in the HMHW of the resonance peak).
 handles=home_state(handles);%set the GUI state back to its default state
+guidata(handles.figure1,handles);
 set(handles.status,'string','Status: GUI handles have been reset to its default state!','backgroundcolor','k','foregroundcolor','r');
 disp('GUI handles have been reset to its default state!');
 handles.din.harmtot=active_harm(handles);%get the active harmonics
-try%prompt the user to import the frequency shift values
-    set(handles.status,'string','Status: Importing...','backgroundcolor','k','foregroundcolor','r');
+try%prompt the user to import the frequency shift values    
     [filename,filepath,~]=uigetfile('.mat','Load frequency shift data',handles.din.filepath);%get the filepath and filename
+    if isstr(filename)==0
+        return
+    end
+    set(handles.status,'string','Status: Importing...','backgroundcolor','k','foregroundcolor','r');
     handles=import_data(handles,filename,filepath);
     handles.din.filepath=filepath;
     handles.din.bare_path=filepath;
@@ -270,107 +285,120 @@ guidata(hObject,handles);
 function MS_Callback(hObject, eventdata, handles)
 clf(figure(99));
 set(figure(99),'menubar','none','name','Settings for generating Material Space Plots',...
-    'numbertitle','off');
-drho_min=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
-    'position',[0.21 0.901 0.15 0.05]);
-drho_max=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
-    'position',[0.21 0.851 0.15 0.05]);
-phi_min=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
-    'position',[0.21 0.751 0.15 0.05]);
-phi_max=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
-    'position',[0.21 0.701 0.15 0.05]);
-grho_min=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
-    'position',[0.21 0.601 0.15 0.05],'foregroundcolor','r');
-grho_max=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
-    'position',[0.21 0.551 0.15 0.05],'foregroundcolor','r');
-d2lam_min=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
-    'position',[0.21 0.451 0.15 0.05]);
-d2lam_max=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
-    'position',[0.21 0.401 0.15 0.05]);
-delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
-    'position',[0.21 0.301 0.15 0.05]);
-delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
-    'position',[0.21 0.251 0.15 0.05]);
-drho_min_txt=uicontrol('style','text','units','normalized','string','drho min:',...
-    'position',[0.05 0.9 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-drho_max_txt=uicontrol('style','text','units','normalized','string','drho max:',...
-    'position',[0.05 0.85 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-phi_min_txt=uicontrol('style','text','units','normalized','string','phi min:',...
-    'position',[0.05 0.75 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-phi_max_txt=uicontrol('style','text','units','normalized','string','phi max:',...
-    'position',[0.05 0.7 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-grho_min_txt=uicontrol('style','text','units','normalized','string','grho min:',...
-    'position',[0.05 0.6 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right',...
-    'foregroundcolor','r');
-grho_max_txt=uicontrol('style','text','units','normalized','string','grho max:',...
-    'position',[0.05 0.55 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right',...
-    'foregroundcolor','r');
-d2lam_min_txt=uicontrol('style','text','units','normalized','string','d2lam min:',...
-    'position',[0.05 0.45 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-d2lam_max_txt=uicontrol('style','text','units','normalized','string','d2lam max:',...
-    'position',[0.05 0.4 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-delf_max_txt=uicontrol('style','text','units','normalized','string','\Deltaf max:',...
-    'position',[0.05 0.3 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-delg_max_txt=uicontrol('style','text','units','normalized','string','\Deltag max:',...
-    'position',[0.05 0.25 0.15 0.05],'fontsize',10,'fontweight','bold','horizontalalignment','right');
-plot_button=uicontrol('style','pushbutton','units','normalized','string','Plot',...
-    'fontsize',10,'fontweight','bold','backgroundcolor',[0.7 0.7 0.7]);
-set(grho_min,'callback',{@d2lam_calc,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
-set(grho_max,'callback',{@d2lam_calc,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
-set(d2lam_min,'callback',{@grho_calc2,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
-set(d2lam_max,'callback',{@grho_calc2,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt});
+    'numbertitle','off','color','w');
+f=figure(99);
+f.Position(3)=300;
+handles2.drho_min=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
+    'position',[0.35 0.901 0.3 0.05]);
+handles2.drho_max=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
+    'position',[0.35 0.851 0.3 0.05]);
+handles2.phi_min=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
+    'position',[0.35 0.751 0.3 0.05]);
+handles2.phi_max=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
+    'position',[0.35 0.701 0.3 0.05]);
+handles2.grho_min=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
+    'position',[0.35 0.601 0.3 0.05],'foregroundcolor','r');
+handles2.grho_max=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
+    'position',[0.35 0.551 0.3 0.05],'foregroundcolor','r');
+handles2.d2lam_min=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
+    'position',[0.35 0.451 0.3 0.05]);
+handles2.d2lam_max=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
+    'position',[0.35 0.401 0.3 0.05]);
+handles2.delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
+    'position',[0.35 0.301 0.3 0.05]);
+handles2.delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
+    'position',[0.35 0.251 0.3 0.05]);
+handles2.drho_min_txt=uicontrol('style','text','units','normalized','string','drho min:',...
+    'position',[0.05 0.9 0.3 0.05]);
+handles2.drho_max_txt=uicontrol('style','text','units','normalized','string','drho max:',...
+    'position',[0.05 0.85 0.3 0.05]);
+handles2.phi_min_txt=uicontrol('style','text','units','normalized','string','phi min:',...
+    'position',[0.05 0.75 0.3 0.05]);
+handles2.phi_max_txt=uicontrol('style','text','units','normalized','string','phi max:',...
+    'position',[0.05 0.7 0.3 0.05]);
+handles2.grho_min_txt=uicontrol('style','text','units','normalized','string','grho min:',...
+    'position',[0.05 0.6 0.3 0.05],'foregroundcolor','r');
+handles2.grho_max_txt=uicontrol('style','text','units','normalized','string','grho max:',...
+    'position',[0.05 0.55 0.3 0.05],'foregroundcolor','r');
+handles2.d2lam_min_txt=uicontrol('style','text','units','normalized','string','d2lam1 min:',...
+    'position',[0.05 0.45 0.3 0.05]);
+handles2.d2lam_max_txt=uicontrol('style','text','units','normalized','string','d2lam1 max:',...
+    'position',[0.05 0.4 0.3 0.05]);
+handles2.delf_max_txt=uicontrol('style','text','units','normalized','string','\Deltaf max:',...
+    'position',[0.05 0.3 0.3 0.05]);
+handles2.delg_max_txt=uicontrol('style','text','units','normalized','string','\Deltag max:',...
+    'position',[0.05 0.25 0.3 0.05]);
+handles2.plot_button=uicontrol('style','pushbutton','units','normalized','string','Plot',...
+    'fontsize',10,'fontweight','bold','backgroundcolor',[0.7 0.7 0.7],'position',[0.025 0.005 0.2 0.05]);
+handles2.uibuttongrp=uibuttongroup('units','normalized','position',[0.025 0.075 0.4 0.15],'backgroundcolor','w');
+handles2.one_layer=uicontrol('style','radiobutton','units','normalized','string','1-layer',...
+    'position',[0.05 0.5 0.8 0.45],'backgroundcolor','w','parent',handles2.uibuttongrp);
+handles2.two_layer=uicontrol('style','radiobutton','units','normalized','string','2-layer',...
+    'tooltipstring','<html>impedance calc. of the semiinfinite layer is based on the dissipation values <br/>listed in the "Calculations options" panel in the main GUI',...
+    'position',[0.05 0 0.8 0.45],'backgroundcolor','w','parent',handles2.uibuttongrp);
+set(findall(f,'style','text'),'backgroundcolor','w','horizontalalignment','right',...
+    'fontweight','bold','fontsize',10);
+set(handles2.grho_min,'callback',{@d2lam_calc,handles,handles2});
+set(handles2.grho_max,'callback',{@d2lam_calc,handles,handles2});
+set(handles2.d2lam_min,'callback',{@grho_calc2,handles,handles2});
+set(handles2.d2lam_max,'callback',{@grho_calc2,handles,handles2});
+set(handles2.drho_min,'callback',{@MS_recalc,handles,handles2});
+set(handles2.drho_max,'callback',{@MS_recalc,handles,handles2});
+set(handles2.phi_min,'callback',{@MS_recalc,handles,handles2});
+set(handles2.phi_max,'callback',{@MS_recalc,handles,handles2});
+guidata(handles2.plot_button,handles2);
 
-function grho_calc2(hObject,~,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt)
-%minimum calculation
-phi_val_min=str2double(phi_min.String);%phi (deg.)
-drho_val_min=str2double(drho_min.String)./1000;%areal mass (kg/m^2)
-d2lam_val_min=str2double(d2lam_min.String);
-f1=handles.din.constants.f1;%fundamental resonance frequency
-grho_val_min=(((drho_val_min./d2lam_val_min).*f1.*1.*cosd(phi_val_min./2)).^2)./1000;%calc. the grho value
-set(grho_min,'string',grho_val_min,'ForegroundColor','r');
-grho_min_txt.ForegroundColor='r';
-hObject.ForegroundColor='k';
-d2lam_min_txt.ForegroundColor='k';
-%maximum calculation
-phi_val_max=str2double(phi_max.String);%phi (deg.)
-drho_val_max=str2double(drho_max.String)./1000;%areal mass (kg/m^2)
-d2lam_val_max=str2double(d2lam_max.String);
-f1=handles.din.constants.f1;%fundamental resonance frequency
-grho_val_max=(((drho_val_max./d2lam_val_max).*f1.*1.*cosd(phi_val_max./2)).^2)./1000;%calc. the grho value
-set(grho_max,'string',grho_val_max,'ForegroundColor','r');
-grho_max_txt.ForegroundColor='r';
-hObject.ForegroundColor='k';
-d2lam_max_txt.ForegroundColor='k';
+function MS_recalc(~,~,handles,handles2)
+temp=findall(figure(99),'style','text','foregroundcolor','r');
+if strcmp(temp(1).String,'grho min:')==1||strcmp(temp(1).String,'grho max:')==1
+    grho_calc2(0,0,handles,handles2);
+elseif strcmp(temp(1).String,'d2lam1 min:')==1||strcmp(temp(1).String,'d2lam1 max:')==1
+    d2lam_calc(0,0,handles,handles2);
+end
 
-function d2lam_calc(hObject,~,handles,drho_min,drho_max,phi_min,phi_max,...
-    grho_min,grho_max,d2lam_min,d2lam_max,grho_min_txt,grho_max_txt,d2lam_min_txt,d2lam_max_txt)
+function grho_calc2(~,~,handles,handles2)
 %minimum calculation
-phi_val_min=str2double(phi_min.String);%phi (deg.)
-drho_val_min=str2double(drho_min.String)./1000;%areal mass (kg/m^2)
-grho_val_min=str2double(grho_min.String).*1000;%grho values (Pa-kg/m^3)
+handles2.phi_val_min=str2double(handles2.phi_min.String);%phi (deg.)
+handles2.drho_val_min=str2double(handles2.drho_min.String)./1000;%areal mass (kg/m^2)
+handles2.d2lam_val_max=str2double(handles2.d2lam_max.String);
 f1=handles.din.constants.f1;%fundamental resonance frequency
-d2lam_val_min=(drho_val_min.*f1.*1.*cosd(phi_val_min./2))./(sqrt(grho_val_min));%calc. the d2lam value
-d2lam_min.String=d2lam_val_min;
-d2lam_min.ForegroundColor='r';
-hObject.ForegroundColor='k';
-grho_min_txt.ForegroundColor='k';
-d2lam_min_txt.ForegroundColor='r';
+handles2.grho_val_min=(((handles2.drho_val_min./handles2.d2lam_val_max).*f1.*1.*cosd(handles2.phi_val_min./2)).^2)./1000;%calc. the grho value
+set(handles2.grho_min,'string',handles2.grho_val_min,'ForegroundColor','r');
+handles2.grho_min_txt.ForegroundColor='r';
+handles2.d2lam_min.ForegroundColor='k';
+handles2.d2lam_min_txt.ForegroundColor='k';
 %maximum calculation
-phi_val_max=str2double(phi_max.String);%phi (deg.)
-drho_val_max=str2double(drho_max.String)./1000;%areal mass (kg/m^2)
-grho_val_max=str2double(grho_max.String).*1000;%grho values (Pa-kg/m^3)
+handles2.phi_val_max=str2double(handles2.phi_max.String);%phi (deg.)
+handles2.drho_val_max=str2double(handles2.drho_max.String)./1000;%areal mass (kg/m^2)
+handles2.d2lam_val_min=str2double(handles2.d2lam_min.String);
+handles2.grho_val_max=(((handles2.drho_val_max./handles2.d2lam_val_min).*f1.*1.*cosd(handles2.phi_val_max./2)).^2)./1000;%calc. the grho value
+set(handles2.grho_max,'string',handles2.grho_val_max,'ForegroundColor','r');
+handles2.grho_max_txt.ForegroundColor='r';
+handles2.d2lam_max.ForegroundColor='k';
+handles2.d2lam_max_txt.ForegroundColor='k';
+
+function d2lam_calc(~,~,handles,handles2)
+%minimum calculation
+handles2.phi_val_min=str2double(handles2.phi_min.String);%phi (deg.)
+handles2.drho_val_min=str2double(handles2.drho_min.String)./1000;%areal mass (kg/m^2)
+handles2.grho_val_max=str2double(handles2.grho_max.String).*1000;%grho values (Pa-kg/m^3)
 f1=handles.din.constants.f1;%fundamental resonance frequency
-d2lam_val_max=(drho_val_max.*f1.*1.*cosd(phi_val_max./2))./(sqrt(grho_val_max));%calc. the d2lam value
-d2lam_max.String=d2lam_val_max;
-d2lam_max.ForegroundColor='r';
-hObject.ForegroundColor='k';
-grho_max_txt.ForegroundColor='k';
-d2lam_max_txt.ForegroundColor='r';
+handles2.d2lam_val_min=(handles2.drho_val_min.*f1.*1.*cosd(handles2.phi_val_min./2))./(sqrt(handles2.grho_val_max));%calc. the d2lam value
+handles2.d2lam_min.String=handles2.d2lam_val_min;
+handles2.d2lam_min.ForegroundColor='r';
+handles2.d2lam_min_txt.ForegroundColor='r';
+handles2.grho_min.ForegroundColor='k';
+handles2.grho_min_txt.ForegroundColor='k';
+%maximum calculation
+handles2.phi_val_max=str2double(handles2.phi_max.String);%phi (deg.)
+handles2.drho_val_max=str2double(handles2.drho_max.String)./1000;%areal mass (kg/m^2)
+handles2.grho_val_min=str2double(handles2.grho_min.String).*1000;%grho values (Pa-kg/m^3)
+handles2.d2lam_val_max=(handles2.drho_val_max.*f1.*1.*cosd(handles2.phi_val_max./2))./(sqrt(handles2.grho_val_min));%calc. the d2lam value
+handles2.d2lam_max.String=handles2.d2lam_val_max;
+handles2.d2lam_max.ForegroundColor='r';
+handles2.d2lam_max_txt.ForegroundColor='r';
+handles2.grho_max.ForegroundColor='k';
+handles2.grho_max_txt.ForegroundColor='k';
 
 function contour_Callback(hObject, ~, handles)
 %This function creates contour plots of the master function.
@@ -406,11 +434,9 @@ if get(handles.edit_drho,'value')==0% if the manual guess for drho has been disa
         drho_n2=drho_est(handles.din.cursor.(['interp_harmfi',num2str(n2)]),n2,f1,zq);%areal mass calc. based on harmonic n2
         drho_n3=drho_est(handles.din.cursor.(['interp_harmfi',num2str(n3)]),n3,f1,zq);%areal mass calc. based on harmonic n3 (not used)
         drho_ave=mean(unique([drho_n1,drho_n2,drho_n3]));%take the average value from all of the drho values
-%         set(handles.drho_guess,'string',drho_ave*1000);
         guess_table{1,2}=drho_ave;
         set(handles.uitable3,'data',guess_table);
     catch
-%         drho_ave=str2double(get(handles.drho_guess,'string'))./1000;%kg/m^2
         drho_ave=guess_table{1,2}./1000;%kg/m^2
     end
 else%if the manual guess for drho has been enabled
