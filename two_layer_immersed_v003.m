@@ -284,30 +284,30 @@ guidata(hObject,handles);
 % --- Executes on button press in MS.
 function MS_Callback(hObject, eventdata, handles)
 clf(figure(99));
-set(figure(99),'menubar','none','name','Settings for generating Material Space Plots',...
+set(figure(99),'menubar','none','name','Gen. Mat. Space Plots',...
     'numbertitle','off','color','w');
 f=figure(99);
 f.Position(3)=300;
 handles2.drho_min=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
-    'position',[0.35 0.901 0.3 0.05]);
+    'position',[0.35 0.901 0.3 0.05],'string',0.1);
 handles2.drho_max=uicontrol('style','edit','units','normalized','tooltipstring','g/m^2',...
-    'position',[0.35 0.851 0.3 0.05]);
+    'position',[0.35 0.851 0.3 0.05],'string',5);
 handles2.phi_min=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
-    'position',[0.35 0.751 0.3 0.05]);
+    'position',[0.35 0.751 0.3 0.05],'string',0);
 handles2.phi_max=uicontrol('style','edit','units','normalized','tooltipstring','deg.',...
-    'position',[0.35 0.701 0.3 0.05]);
+    'position',[0.35 0.701 0.3 0.05],'string',20);
 handles2.grho_min=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
     'position',[0.35 0.601 0.3 0.05],'foregroundcolor','r');
 handles2.grho_max=uicontrol('style','edit','units','normalized','tooltipstring','Pa-g/cm^3',...
     'position',[0.35 0.551 0.3 0.05],'foregroundcolor','r');
 handles2.d2lam_min=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
-    'position',[0.35 0.451 0.3 0.05]);
+    'position',[0.35 0.451 0.3 0.05],'string',0.02);
 handles2.d2lam_max=uicontrol('style','edit','units','normalized','tooltipstring','normlized thickness',...
-    'position',[0.35 0.401 0.3 0.05]);
+    'position',[0.35 0.401 0.3 0.05],'string',0.5);
 handles2.delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
-    'position',[0.35 0.301 0.3 0.05]);
-handles2.delf_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
-    'position',[0.35 0.251 0.3 0.05]);
+    'position',[0.35 0.301 0.3 0.05],'string',1e5);
+handles2.delg_max=uicontrol('style','edit','units','normalized','tooltipstring','Hz',...
+    'position',[0.35 0.251 0.3 0.05],'string',2e4);
 handles2.drho_min_txt=uicontrol('style','text','units','normalized','string','drho min:',...
     'position',[0.05 0.9 0.3 0.05]);
 handles2.drho_max_txt=uicontrol('style','text','units','normalized','string','drho max:',...
@@ -346,7 +346,53 @@ set(handles2.drho_min,'callback',{@MS_recalc,handles,handles2});
 set(handles2.drho_max,'callback',{@MS_recalc,handles,handles2});
 set(handles2.phi_min,'callback',{@MS_recalc,handles,handles2});
 set(handles2.phi_max,'callback',{@MS_recalc,handles,handles2});
+set(handles2.plot_button,'callback',{@MS_plot,handles,handles2});
+grho_calc2(1,1,handles,handles2);
 guidata(handles2.plot_button,handles2);
+
+function MS_plot(~,~,handles,handles2)
+handles=guidata(handles.figure1);%refresh the handles structure
+drho=[str2double(handles2.drho_min.String) str2double(handles2.drho_max.String)];
+phi=[str2double(handles2.phi_min.String) str2double(handles2.phi_max.String)];
+grho=[str2double(handles2.grho_min.String) str2double(handles2.grho_max.String)];
+d2lam=[str2double(handles2.d2lam_min.String) str2double(handles2.d2lam_max.String)];
+del_fg=[str2double(handles2.delf_max.String) str2double(handles2.delg_max.String)];
+f1=handles.din.constants.f1;%fundamentalr resonance freq in Hz
+zq=handles.din.constants.zq;% the quartz load impedance
+%get the harmonic combinations in which the calcualtions will be based off
+%of
+harm_value=handles.contour_choice.Value;
+harm_string=handles.contour_choice.String;
+MS_harm=harm_string{harm_value};
+index1=find(MS_harm==',');
+index2=find(MS_harm==':');
+n1=str2double(MS_harm(1:index1-1));
+n2=str2double(MS_harm(index1+1:index2-1));
+n3=str2double(MS_harm(index2+1:end));
+%run the calcualtions
+%calculate the liquid load impedance
+if handles2.two_layer.Value==1
+    dgliq_n=str2double(get(handles.dgliq,'string'));%diss shift used for liq load impedance calc
+    dfliq_n=-dgliq_n;%freq shift used for liq load impedance calc
+    z_star_liq_n=zqliq_n_calc(dfliq_n,dgliq_n,f1,zq);%calc the liq load impedance at dgliq_harm
+    dgliq_harm=str2double(get(handles.dgliq_harm,'string'));%harmonic in which the liq load impedance was calc at
+else
+    dgliq_n=0;%diss shift used for liq load impedance calc
+    dfliq_n=0;%freq shift used for liq load impedance calc
+    z_star_liq_n=zqliq_n_calc(dfliq_n,dgliq_n,f1,zq);%calc the liq load impedance at dgliq_harm
+    dgliq_harm=str2double(get(handles.dgliq_harm,'string'));%harmonic in which the liq load impedance was calc at
+end
+unique_n=unique([n1 n2 n3]);
+for dum=1:length(unique_n)
+    name=['n_',num2str(unique_n(dum)),'_',num2str(n1),num2str(n2),num2str(n3)];%nomenclature: n_<harmonic in which values are calc. at>_<harm used to calc properties>
+    handles.din.solved.(name).drho=drho;
+    handles3=calc_viscoelastic_par(handles,unique_n(dum),f1,z_star_liq_n,zq,[d2lam phi drho],dgliq_harm,name,n1);%calculate the viscoelastic parameters
+end
+clf(figure(100));
+f=figure(100);
+set(f,'numbertitle','off');
+keyboard
+
 
 function MS_recalc(~,~,handles,handles2)
 temp=findall(figure(99),'style','text','foregroundcolor','r');
