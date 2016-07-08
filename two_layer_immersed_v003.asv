@@ -2360,8 +2360,8 @@ handles.din.(['harmg',num2str(harm)])=gdata;
 index2=find(handles.din.rawdata.freq_shift(:,1)==fdata(index(1)));
 handles.din.rawdata.freq_shift(index2,harm+1)=fdata(index,2);
 handles.din.rawdata.freq_shift(index2,harm+2)=gdata(index,2);
-handles.din.rawdata.abs_freq(index2,harm+1)=fdata(index,2)+ref(1);
-handles.din.rawdata.abs_freq(index2,harm+2)=gdata(index,2)+ref(2);
+handles.din.rawdata.abs_freq(index2,harm+1)=fdata(index,2)+ref(1;
+handles.din.rawdata.abs_freq(index2,harm+2)=gdata(index,2);
 handles.din.rawdata.chisq_values(index2,harm+1)=sum(Glsq);
 handles.din.rawdata.chisq_values(index2,harm+2)=sum(Blsq);
 guidata(handles.figure1,handles);%update the handles structure
