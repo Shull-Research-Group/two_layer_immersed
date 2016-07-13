@@ -24,7 +24,7 @@ function varargout = two_layer_immersed_v003(varargin)
 
 % Edit the above text to modify the response to help two_layer_immersed_v003
 
-% Last Modified by GUIDE v2.5 18-May-2016 16:01:11
+% Last Modified by GUIDE v2.5 13-Jul-2016 13:07:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2059,11 +2059,48 @@ end
 handles.din.simulate=0;
 guidata(handles.figure1,handles);
 
+
+% --- Executes on button press in fit_all.
+function fit_all_Callback(hObject, eventdata, handles)
+if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
+    disp(['Raw spectras extracted from : ', handles.raw.pathname,handles.raw.filename]);
+    initial_time=str2double(handles.initial_time.String);
+    solve_inc=str2double(handles.solve_inc.String);
+    extent=str2double(handles.extent.String);
+    harm=floor(str2double(inputdlg('Which harmonic do you wish to refit (integers only!)','Choose harmonic to refit',1,{'3'})));
+    if strcmp(class(harm),'double')==0||isempty(harm)==1||isnan(harm)==1
+        disp('Harmonic input was not a number, not odd, and/or less than 12!');
+        return
+    else
+        disp(['Harmonic to be fitted: ',num2str(harm)]);
+    end
+    disp(['Fitting from global index [',num2str(initial_time),'] to [',num2str(extent),'] in increments of [',num2str(solve_inc),']']);
+    try
+        for dum=initial_time:solve_inc:extent
+            handles=guidata(handles.figure1);
+            timeline=handles.din.rawdata.freq_shift(:,1);
+            timepoint0=timeline(dum);
+            event.Position(1)=timepoint0;
+            rawfit(handles,harm,event);
+            h=guidata(findall(0,'type','figure','name','Refit panel'));
+            h.guess_values_options.Value=4;
+            fit_button_callback(hObject,1,handles,harm,h.guess_values_options,h.a4,h.a1,h.a2);
+            accept_fcn(1,1,guidata(handles.figure1));
+            keyboard
+        end
+    catch
+    end
+else
+    disp('Raw spectras have not been loaded!');
+end
+
+
 % --------------------------------------------------------------------
 function viewraw_ClickedCallback(hObject, eventdata, handles)
 dcm=datacursormode(handles.figure1);
 flag=0;
 if strcmp(get(hObject,'state'),'on')
+    handles.fit_all.Visible='on';
     try
         try        
             if exist([handles.raw.pathname,handles.raw.filename],'file')==2
@@ -2114,6 +2151,7 @@ if strcmp(get(hObject,'state'),'on')
     set(dcm,'UpdateFcn',{@myupdatefcn,handles,hObject});
 else
     set(dcm,'enable','off');
+    set(handles.fit_all,'visible','off');
     delete(figure(1));
     delete(figure(2));
     delete(figure(3));
@@ -2163,6 +2201,7 @@ set(dum,'rotation',-90,'verticalalignment','bottom');
 try
     [~,filename,ext]=fileparts(handles.raw.filename);
     pathname=handles.raw.pathname;
+    ind=find(handles.din.rawdata.freq_shift(:,1)==event.Position(1));
     timepoint=strrep(num2str(event.Position(1)),'.','dot');
     varname=sprintf([filename(1:end-13),'_t_%s_iq_1_ih_',num2str(0.5*(harm+1))],timepoint);
     disp(['Loading variable: ',varname]);
@@ -2171,7 +2210,8 @@ try
     set(handles.status,'string','Status: Variable loaded!','backgroundcolor','k','foregroundcolor','r');
     plot(a1,raw.(varname)(:,1),raw.(varname)(:,2),'bx');
     plot(a2,raw.(varname)(:,1),raw.(varname)(:,3),'rx');    
-    set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',[filename,'  View raw data for n=',num2str(harm)],...
+    set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',...
+        [filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
     'numbertitle','off');
     pos2=get(a1,'position');
     set(a1,'ycolor','b','position',[0.8*pos2(1) pos2(2) pos2(3) pos2(4)],'color','none');
@@ -2190,7 +2230,12 @@ try
         'position',[0.5 0.01 0.25 0.08],'string','Multi-peak','fontweight','bold','backgroundcolor',...
         [0.8 0.8 0.8]);           
     a3=axes;set(a3,'parent',figure(2),'position',[0.2 0.63 0.7 0.35],'fontsize',8);
-    a4=axes;set(a4,'parent',figure(2),'position',[0.2 0.2 0.7 0.3],'fontsize',8);    
+    a4=axes;set(a4,'parent',figure(2),'position',[0.2 0.2 0.7 0.3],'fontsize',8);
+    h.a1=a1;
+    h.a2=a2;
+    h.a4=a4;
+    h.guess_values_options=guess_values_options;
+    guidata(findall(0,'type','figure','name','Refit panel'),h);
     set(fit_button,'callback',{@fit_button_callback,handles,harm,guess_values_options,a4,a1,a2});
     set(multi_button,'callback',{@multi,handles});
     plot(a3,raw.(varname)(:,2),raw.(varname)(:,3),'x','color',[0 0.5 0]);
@@ -2338,6 +2383,9 @@ if isempty(G_fit)==0
         'string','Delete datapoint','callback',{@del_fcn,handles});
     accept.Position(1)=5; accept.Position(2)=5;
     del.Position(1)=70; del.Position(2)=5; del.Position(3)=del.Position(3)*1.5;
+    h.accept=accept;
+    h.del=del;
+    guidata(accept.Parent,h);
 end
 
 function accept_fcn(hObject,event,handles)
@@ -2372,9 +2420,9 @@ export=matfile([pathname,filename],'writable',true);
 export.freq_shift=handles.din.rawdata.freq_shift;
 export.abs_freq=handles.din.rawdata.abs_freq;
 export.chisq_values=handles.din.rawdata.chisq_values;
-export.refit_log={['Modifications made on datapoint: ',num2str(index)],...
-    ['Modification performed on: ',date],...
-    ['Program versions: ',get(handles.text4,'string')]};
+% export.(['mod_',datestr(now,'yyyy_mm_dd_HH_MM_SS')])={['Modifications made on datapoint: ',num2str(index)],...
+%     ['Modification performed on: ',date],...
+%     ['Program versions: ',get(handles.text4,'string')]};
 disp('Dataset and file updated');
 disp('Updating plots');
 myharmfcn(handles.(['harm',num2str(harm)]),handles);
@@ -3012,11 +3060,6 @@ function fcns=lfun4_both_3(p,x)%this fucntion fits 3 peaks (cond and sus)
 
 %p(16): Offset value (susceptance) (1)   p(17): Offsetvalue(susceptance)(2)       p(18): offset value (susceptance) (3)
 fcns=[lfun4c_3(p(1:15),x),lfun4s_3([p(1:4),p(16),p(6:9),p(17),p(11:14),p(18)],x)];
-
-
-
-
-
 
 
 
