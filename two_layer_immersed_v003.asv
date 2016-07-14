@@ -2077,14 +2077,20 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
     disp(['Fitting from global index [',num2str(initial_time),'] to [',num2str(extent),'] in increments of [',num2str(solve_inc),']']);
     try
         for dum=initial_time:solve_inc:extent
-            handles=guidata(handles.figure1
+            handles=guidata(handles.figure1);
             timeline=handles.din.rawdata.freq_shift(:,1);
             timepoint0=timeline(dum);
             event.Position(1)=timepoint0;
             rawfit(handles,harm,event);
+            drawnow;
+            for t=5:-1:0
+                disp();
+            end
             h=guidata(findall(0,'type','figure','name','Refit panel'));
             h.guess_values_options.Value=4;
             fit_button_callback(hObject,1,handles,harm,h.guess_values_options,h.a4,h.a1,h.a2);
+            drawnow;
+            pause(5);
             accept_fcn(1,1,guidata(handles.figure1));
             keyboard
         end
@@ -2201,6 +2207,7 @@ set(dum,'rotation',-90,'verticalalignment','bottom');
 try
     [~,filename,ext]=fileparts(handles.raw.filename);
     pathname=handles.raw.pathname;
+    ind=find(handles.din.rawdata.freq_shift(:,1)==event.Position(1));
     timepoint=strrep(num2str(event.Position(1)),'.','dot');
     varname=sprintf([filename(1:end-13),'_t_%s_iq_1_ih_',num2str(0.5*(harm+1))],timepoint);
     disp(['Loading variable: ',varname]);
@@ -2209,7 +2216,8 @@ try
     set(handles.status,'string','Status: Variable loaded!','backgroundcolor','k','foregroundcolor','r');
     plot(a1,raw.(varname)(:,1),raw.(varname)(:,2),'bx');
     plot(a2,raw.(varname)(:,1),raw.(varname)(:,3),'rx');    
-    set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',[filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min'],...
+    set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',...
+        [filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
     'numbertitle','off');
     pos2=get(a1,'position');
     set(a1,'ycolor','b','position',[0.8*pos2(1) pos2(2) pos2(3) pos2(4)],'color','none');

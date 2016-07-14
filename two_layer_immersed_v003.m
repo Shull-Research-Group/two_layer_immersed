@@ -239,8 +239,10 @@ handles=bare_crystal(handles);%output the reference crystal readings
 timepoints=handles.din.rawdata.freq_shift(:,1);%xtract out the timepoints
 ind=find(isnan(timepoints)==0);
 timepoints=timepoints(ind);
-handles.din.extent=length(timepoints);
-set(handles.extent,'string',handles.din.extent);
+if strcmp(handles.viewraw.State,'off')
+    handles.din.extent=length(timepoints);
+    set(handles.extent,'string',handles.din.extent);
+end
 initial_time_Callback(handles.initial_time, 1, handles);
 extent_Callback(handles.extent, 1, handles);
 %update the handles structure
@@ -2082,11 +2084,31 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
             timepoint0=timeline(dum);
             event.Position(1)=timepoint0;
             rawfit(handles,harm,event);
+            drawnow;
+            disp('Flushing graphics...');
+            for t=3:-1:1
+                disp(t);
+                pause(1);
+            end
             h=guidata(findall(0,'type','figure','name','Refit panel'));
             h.guess_values_options.Value=4;
-            fit_button_callback(hObject,1,handles,harm,h.guess_values_options,h.a4,h.a1,h.a2);
-            accept_fcn(1,1,guidata(handles.figure1));
-            keyboard
+            fit_button_callback(hObject,1,guidata(handles.figure1),harm,h.guess_values_options,h.a4,h.a1,h.a2);
+            drawnow;
+            disp('Flushing graphics...');
+            for t=3:-1:1
+                disp(t);
+                pause(1);
+            end
+            handles=guidata(handles.figure1);
+            handles.raw.index=dum;
+            guidata(handles.figure1,handles);            
+            accept_fcn(1,1,handles);
+            drawnow;
+            disp('Flushing graphics...');
+            for t=5:-1:1
+                disp(t);
+                pause(1);
+            end                                    
         end
     catch
     end
