@@ -2091,7 +2091,9 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
             h.guess_values_options.Value=4;
             handles.raw.index=find(harm_dataf(:,1)==timepoint0);
             guidata(handles.figure1,handles);            
-            fit_button_callback(hObject,1,guidata(handles.figure1),harm,h.guess_values_options,h.a4,h.a1,h.a2,h.a3);
+            for repeat=1:5
+                fit_button_callback(hObject,1,guidata(handles.figure1),harm,h.guess_values_options,h.a4,h.a1,h.a2,h.a3);
+            end
             drawnow;
             handles=guidata(handles.figure1);
 %             handles.raw.index=find(harm_dataf(:,1)==timepoint0);
