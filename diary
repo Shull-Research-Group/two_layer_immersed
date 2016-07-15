@@ -1,0 +1,515 @@
+two_layer_immersed_v003
+disp('this si a test')
+this si a test
+diary off
+GUI handles have been reset to its default state!
+Data successfully imported!
+F:\Dropbox\Research - Yeh\Drafts\Silicone QCM\MATLAB\rawdata\063016 PDMS 37K\PDMS 15wt\PDMS_15wt_ramp.mat
+Unable to locate raw file!
+Please select raw file to load
+loading F:\Dropbox\Research - Yeh\Drafts\Silicone QCM\MATLAB\rawdata\063016 PDMS 37K\PDMS 15wt\PDMS_15wt_ramp_raw_spectras
+Registered selected raw file!
+Loading variable: PDMS_15wt_ramp_t_528dot2477_iq_1_ih_3
+Elapsed time is 4.861324 seconds.
+Variable loaded!
+Loading variable: PDMS_15wt_ramp_t_529dot0442_iq_1_ih_3
+Elapsed time is 4.834895 seconds.
+Variable loaded!
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 0.0050 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 1.0000e-03 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 1.0000e-06 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 1.0000e-03 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Previous guess values not found. Guess values will be chosen from the derivative of the polar plot
+Peak fitting canceled!
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'
+   NaN   NaN   NaN   NaN   NaN
+   NaN   NaN   NaN   NaN   NaN
+ 
+Re-fitting the raw spectra!
+Peak fitting canceled!
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 1.0000e-03 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 1.0000e-03 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Peak fitting canceled!
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 1.0000e-04 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 1.0000e-03 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Fitting 3 peaks
+Elapsed time is 1.491670 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+ 
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.072485 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+ 
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.051147 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+ 
+Loading variable: PDMS_15wt_ramp_t_532dot123_iq_1_ih_3
+Elapsed time is 4.858869 seconds.
+Variable loaded!
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.045154 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+ 
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5084    0.0148   -0.0000    0.0000   -0.0000    2.5027    0.0015    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5084    0.0148   -0.0000    0.0000    0.0000    2.5027    0.0015    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.102681 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5072    0.0109   -0.0000    0.0000   -0.0000    2.5027    0.0016    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5072    0.0109   -0.0000    0.0000    0.0000    2.5027    0.0016    0.0000    0.0000    0.0000
+ 
+Re-fitting the raw spectra!
+Fitting 3 peaks
+Elapsed time is 1.681713 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5006    0.0006    0.0000    0.0000   -0.0000    2.5077    0.0024   -0.0000    0.0000   -0.0000    2.5007    0.0006   -0.0000    0.0000   -0.0000
+    2.5006    0.0006    0.0000    0.0000    0.0000    2.5077    0.0024   -0.0000    0.0000    0.0000    2.5007    0.0006   -0.0000    0.0000    0.0000
+ 
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 1.0000e-04 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 0.0100 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Peak fitting canceled!
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 1.0000e-03 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 0.0100 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Peak fitting canceled!
+ans = 
+      num_peaks: [3 0 3 0 3 0 3 0 3 0 3]
+    sensitivity: [0.0050 0 0.0050 0 4.0000e-04 0 0.0050 0 0.0050 0 0.0050]
+       peak_min: [0.2000 0 0.2000 0 0.0100 0 0.2000 0 0.2000 0 0.2000]
+     simul_peak: 1
+Re-fitting the raw spectra!
+Peak fitting canceled!
+Loading variable: PDMS_15wt_ramp_t_537dot7808_iq_1_ih_3
+Elapsed time is 5.122932 seconds.
+Variable loaded!
+Re-fitting the raw spectra!
+Peak fitting canceled!
+Loading variable: PDMS_15wt_ramp_t_525dot9887_iq_1_ih_3
+Elapsed time is 5.114111 seconds.
+Variable loaded!
+Re-fitting the raw spectra!
+Fitting 3 peaks
+Elapsed time is 0.956315 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5024    0.0015    0.0000    0.0000   -0.0000    2.5112    0.0092    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5024    0.0015    0.0000    0.0000    0.0000    2.5112    0.0092    0.0000    0.0000    0.0000
+ 
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5024    0.0015    0.0000    0.0000   -0.0000    2.5112    0.0092    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5024    0.0015    0.0000    0.0000    0.0000    2.5112    0.0092    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.127704 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5024    0.0015    0.0000    0.0000   -0.0000    2.5112    0.0092    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5024    0.0015    0.0000    0.0000    0.0000    2.5112    0.0092    0.0000    0.0000    0.0000
+ 
+  
+Registered raw file!
+  
+Registered raw file!
+Raw spectras extracted from : F:\Dropbox\Research - Yeh\Drafts\Silicone QCM\MATLAB\rawdata\063016 PDMS 37K\PDMS 15wt\PDMS_15wt_ramp_raw_spectras.mat
+Harmonic to be fitted: 5
+Fitting from global index [780] to [801] in increments of [1]
+Loading variable: PDMS_15wt_ramp_t_245dot592_iq_1_ih_3
+Elapsed time is 4.863467 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5011    0.0006    0.0000    0.0000   -0.0000    2.5024    0.0015    0.0000    0.0000   -0.0000    2.5112    0.0092    0.0000    0.0000   -0.0000
+    2.5011    0.0006    0.0000    0.0000    0.0000    2.5024    0.0015    0.0000    0.0000    0.0000    2.5112    0.0092    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.503104 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5064    0.0040    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5064    0.0040    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_245dot8998_iq_1_ih_3
+Elapsed time is 4.859937 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5064    0.0040    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5064    0.0040    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 4.860408 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5063    0.0044    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5063    0.0044    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_246dot2081_iq_1_ih_3
+Elapsed time is 4.850666 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5063    0.0044    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5063    0.0044    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.066007 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0017    0.0000    0.0000   -0.0000    2.5061    0.0050    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0017    0.0000    0.0000    0.0000    2.5061    0.0050    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_246dot5145_iq_1_ih_3
+Elapsed time is 4.847758 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0017    0.0000    0.0000   -0.0000    2.5061    0.0050    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0017    0.0000    0.0000    0.0000    2.5061    0.0050    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.310678 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0016    0.0000    0.0000   -0.0000    2.5060    0.0055    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0016    0.0000    0.0000    0.0000    2.5060    0.0055    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_246dot823_iq_1_ih_3
+Elapsed time is 4.917556 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0016    0.0000    0.0000   -0.0000    2.5060    0.0055    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0016    0.0000    0.0000    0.0000    2.5060    0.0055    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.041335 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0016    0.0000    0.0000   -0.0000    2.5061    0.0051    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0016    0.0000    0.0000    0.0000    2.5061    0.0051    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_247dot134_iq_1_ih_3
+Elapsed time is 4.868836 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5020    0.0016    0.0000    0.0000   -0.0000    2.5061    0.0051    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5020    0.0016    0.0000    0.0000    0.0000    2.5061    0.0051    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.066682 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5063    0.0044    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5063    0.0044    0.0000    0.0000    0.0000
+ 
+Flushing graphics...
+     3
+     2
+     1
+Dataset and file updated
+Updating plots
+Plots updated
+Flushing graphics...
+     5
+     4
+     3
+     2
+     1
+Loading variable: PDMS_15wt_ramp_t_247dot4417_iq_1_ih_3
+Elapsed time is 5.063878 seconds.
+Variable loaded!
+Flushing graphics...
+     3
+     2
+     1
+Re-fitting the raw spectra!
+Previous guess parameters found.
+Previous fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd'    'offset_3rd'
+   1.0e+07 *
+    2.5002    0.0007    0.0000    0.0000   -0.0000    2.5019    0.0015    0.0000    0.0000   -0.0000    2.5063    0.0044    0.0000    0.0000   -0.0000
+    2.5002    0.0007    0.0000    0.0000    0.0000    2.5019    0.0015    0.0000    0.0000    0.0000    2.5063    0.0044    0.0000    0.0000    0.0000
+Fitting 3 peaks
+Elapsed time is 0.063353 seconds.
+Fitting parameters have been exported to the workspace.
+Current fitting parameters (row 1: G_par, row2: B_par):
+  Columns 1 through 13
+    'f0_1st'    'gamma0_1st'    'phi_1st'    'Gmax_1st'    'offset_1st'    'f0_2nd'    'gamma0_2nd'    'phi_2nd'    'Gmax_2nd'    'offset_2nd'    'f0_3rd'    'gamma0_3rd'    'phi_3rd'
+  Columns 14 through 15
+    'Gmax_3rd

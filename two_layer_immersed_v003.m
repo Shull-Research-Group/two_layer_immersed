@@ -2070,6 +2070,8 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
     solve_inc=str2double(handles.solve_inc.String);
     extent=str2double(handles.extent.String);
     harm=floor(str2double(inputdlg('Which harmonic do you wish to refit (integers only!)','Choose harmonic to refit',1,{'3'})));
+    harm_dataf=handles.din.(['harmf',num2str(harm)]);
+%     harm_datag=handles.din.(['harmg',num2str(harm)]);
     if strcmp(class(harm),'double')==0||isempty(harm)==1||isnan(harm)==1
         disp('Harmonic input was not a number, not odd, and/or less than 12!');
         return
@@ -2085,31 +2087,19 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
             event.Position(1)=timepoint0;
             rawfit(handles,harm,event);
             drawnow;
-            disp('Flushing graphics...');
-            for t=3:-1:1
-                disp(t);
-                pause(1);
-            end
             h=guidata(findall(0,'type','figure','name','Refit panel'));
             h.guess_values_options.Value=4;
-            fit_button_callback(hObject,1,guidata(handles.figure1),harm,h.guess_values_options,h.a4,h.a1,h.a2);
+            handles.raw.index=find(harm_dataf(:,1)==timepoint0);
+            guidata(handles.figure1,handles);            
+            fit_button_callback(hObject,1,guidata(handles.figure1),harm,h.guess_values_options,h.a4,h.a1,h.a2,h.a3);
             drawnow;
-            disp('Flushing graphics...');
-            for t=3:-1:1
-                disp(t);
-                pause(1);
-            end
             handles=guidata(handles.figure1);
-            handles.raw.index=dum;
+%             handles.raw.index=find(harm_dataf(:,1)==timepoint0);
             guidata(handles.figure1,handles);            
             accept_fcn(1,1,handles);
-            drawnow;
-            disp('Flushing graphics...');
-            for t=5:-1:1
-                disp(t);
-                pause(1);
-            end                                    
+            drawnow;                                  
         end
+        disp('Automated refitting process finished.');
     catch
     end
 else
@@ -2168,6 +2158,7 @@ if strcmp(get(hObject,'state'),'on')
     end    
     handles.raw.filename=[filename,'.mat'];
     handles.raw.pathname=pathname;
+%     handles.spectra_file=matfile([pathname,filename]);
     guidata(handles.figure1,handles);
     set(dcm,'enable','on');
     set(dcm,'UpdateFcn',{@myupdatefcn,handles,hObject});
@@ -2212,13 +2203,19 @@ guidata(handles.figure1,handles);
 function handles=rawfit(handles,harm,event)
 flag=0;
 handles=guidata(handles.figure1);
-clf(figure(1));set(figure(1),'units','normalized');pos=get(figure(1),'position');
-a1=axes;hold(a1,'on'); a2=axes;hold(a2,'on');
-xlabel(a1,'Frequency (Hz)','fontweight','bold','fontsize',14);
-ylabel(a1,'Conductance (mS)','fontweight','bold','fontsize',14,'color','b');
-xlabel(a2,'Frequency (Hz)','fontweight','bold','fontsize',14);
-dum=ylabel(a2,'Susceptance (mS)','fontweight','bold','fontsize',14,'color','r');
-set(dum,'rotation',-90,'verticalalignment','bottom');
+h=guidata(figure(2));
+delete(findall([figure(1) figure(2)],'userdata','mark'));
+if isfield(h,'ver')==1    
+    flag=1;
+else
+    clf(figure(1));set(figure(1),'units','normalized');pos=get(figure(1),'position');
+    h.a1=axes;hold(h.a1,'on'); h.a2=axes;hold(h.a2,'on');
+    xlabel(h.a1,'Frequency (Hz)','fontweight','bold','fontsize',14);
+    ylabel(h.a1,'Conductance (mS)','fontweight','bold','fontsize',14,'color','b');
+    xlabel(h.a2,'Frequency (Hz)','fontweight','bold','fontsize',14);
+    dum=ylabel(h.a2,'Susceptance (mS)','fontweight','bold','fontsize',14,'color','r');
+    set(dum,'rotation',-90,'verticalalignment','bottom');
+end
 [pathloc,fileloc,fileext]=fileparts(get(handles.filename_txt,'tooltipstring'));
 try
     [~,filename,ext]=fileparts(handles.raw.filename);
@@ -2227,46 +2224,53 @@ try
     timepoint=strrep(num2str(event.Position(1)),'.','dot');
     varname=sprintf([filename(1:end-13),'_t_%s_iq_1_ih_',num2str(0.5*(harm+1))],timepoint);
     disp(['Loading variable: ',varname]);
+    tic
+%     raw.(varname)=handles.spectra_file.(varname);
     raw=load([pathname,filename,ext],'-mat',varname);
+    toc
     disp(['Variable loaded!']);
     set(handles.status,'string','Status: Variable loaded!','backgroundcolor','k','foregroundcolor','r');
-    plot(a1,raw.(varname)(:,1),raw.(varname)(:,2),'bx');
-    plot(a2,raw.(varname)(:,1),raw.(varname)(:,3),'rx');    
-    set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',...
-        [filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
-    'numbertitle','off');
-    pos2=get(a1,'position');
-    set(a1,'ycolor','b','position',[0.8*pos2(1) pos2(2) pos2(3) pos2(4)],'color','none');
-    set(a2,'position',get(a1,'position'),'color','none','yaxislocation','right','ycolor','r');
-    clf(figure(2));
-    set(figure(2),'units','normalized','position',[pos(1)+0.333 pos(2) 0.165 0.4],'name','Refit panel','numbertitle','off');
-    guess_values_options=uicontrol('parent',figure(2),'style','popupmenu',...
-        'unit','normalized',...
-        'fontweight','bold','fontsize',10,'string',[{'Gmax'};{'Derivative'};{'Bmax'};{'Previous values'};{'User-defined'}],...
-        'horizontalalignment','left','tooltipstring','Choose guess values for curve fitting.',...
-        'value',4,'position',[.025 0 0.45 0.08]);
-    fit_button=uicontrol('parent',figure(2),'style','pushbutton','unit','normalized',...
-        'position',[0.78 0.01 0.2 0.08],'string','Fit','fontweight','bold','tooltipstring',...
-        'Fit the resonance peak');
-    multi_button=uicontrol('parent',figure(2),'style','togglebutton','unit','normalized',...
-        'position',[0.5 0.01 0.25 0.08],'string','Multi-peak','fontweight','bold','backgroundcolor',...
-        [0.8 0.8 0.8]);           
-    a3=axes;set(a3,'parent',figure(2),'position',[0.2 0.63 0.7 0.35],'fontsize',8);
-    a4=axes;set(a4,'parent',figure(2),'position',[0.2 0.2 0.7 0.3],'fontsize',8);
-    h.a1=a1;
-    h.a2=a2;
-    h.a4=a4;
-    h.guess_values_options=guess_values_options;
-    guidata(findall(0,'type','figure','name','Refit panel'),h);
-    set(fit_button,'callback',{@fit_button_callback,handles,harm,guess_values_options,a4,a1,a2});
-    set(multi_button,'callback',{@multi,handles});
-    plot(a3,raw.(varname)(:,2),raw.(varname)(:,3),'x','color',[0 0.5 0]);
-    xlabel(a3,'Conductance (mS)','fontweight','bold');
-    ylabel(a3,'Susceptance (mS)','fontweight','bold');
-    drawnow;
+    if flag==1
+        set(findall(figure(1),'type','line','userdata','mark1'),'xdata',raw.(varname)(:,1),'ydata',raw.(varname)(:,2));
+        set(findall(figure(1),'type','line','userdata','mark2'),'xdata',raw.(varname)(:,1),'ydata',raw.(varname)(:,3));
+        set(findall(figure(2),'type','line','userdata','mark3'),'xdata',raw.(varname)(:,2),'ydata',raw.(varname)(:,3));
+        set(figure(1),'name',[filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)]);
+    elseif flag==0
+        plot(h.a1,raw.(varname)(:,1),raw.(varname)(:,2),'bx','userdata','mark1');
+        plot(h.a2,raw.(varname)(:,1),raw.(varname)(:,3),'rx','userdata','mark2');  
+        set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',...
+            [filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
+        'numbertitle','off');
+        pos2=get(h.a1,'position');
+        set(h.a1,'ycolor','b','position',[0.8*pos2(1) pos2(2) pos2(3) pos2(4)],'color','none');
+        set(h.a2,'position',get(h.a1,'position'),'color','none','yaxislocation','right','ycolor','r');
+        clf(figure(2));
+        set(figure(2),'units','normalized','position',[pos(1)+0.333 pos(2) 0.165 0.4],'name','Refit panel','numbertitle','off');
+        h.guess_values_options=uicontrol('parent',figure(2),'style','popupmenu',...
+            'unit','normalized',...
+            'fontweight','bold','fontsize',10,'string',[{'Gmax'};{'Derivative'};{'Bmax'};{'Previous values'};{'User-defined'}],...
+            'horizontalalignment','left','tooltipstring','Choose guess values for curve fitting.',...
+            'value',4,'position',[.025 0 0.45 0.08]);
+        h.fit_button=uicontrol('parent',figure(2),'style','pushbutton','unit','normalized',...
+            'position',[0.78 0.01 0.2 0.08],'string','Fit','fontweight','bold','tooltipstring',...
+            'Fit the resonance peak');
+        h.multi_button=uicontrol('parent',figure(2),'style','togglebutton','unit','normalized',...
+            'position',[0.5 0.01 0.25 0.08],'string','Multi-peak','fontweight','bold','backgroundcolor',...
+            [0.8 0.8 0.8]);           
+        h.a3=axes;set(h.a3,'parent',figure(2),'position',[0.2 0.63 0.7 0.35],'fontsize',8);
+        h.a4=axes;set(h.a4,'parent',figure(2),'position',[0.2 0.2 0.7 0.3],'fontsize',8);    
+        xlabel(h.a3,'Conductance (mS)','fontweight','bold');
+        ylabel(h.a3,'Susceptance (mS)','fontweight','bold');
+        set(h.fit_button,'callback',{@fit_button_callback,handles,harm,h.guess_values_options,h.a4,h.a1,h.a2,h.a3});
+        set(h.multi_button,'callback',{@multi,handles});
+        plot(h.a3,raw.(varname)(:,2),raw.(varname)(:,3),'x','color',[0 0.5 0],'userdata','mark3');
+    end        
+    drawnow;    
     handles.raw.frequency=raw.(varname)(:,1);
     handles.raw.conductance=raw.(varname)(:,2);
     handles.raw.susceptance=raw.(varname)(:,3);
+    h.ver='2layer_fit';
+    guidata(findall(0,'type','figure','name','Refit panel'),h);
     guidata(handles.figure1,handles);
 catch
     disp('Error in loading variable!');
@@ -2304,7 +2308,7 @@ handles.prefs.num_peaks(1:2:11)=data(:,3);
 guidata(handles.figure1,handles);
 handles.prefs
 
-function fit_button_callback(hObject,~,handles,harm,guess_values_options,a4,a1,a2)
+function fit_button_callback(hObject,~,handles,harm,guess_values_options,a4,a1,a2,a3)
 disp('Re-fitting the raw spectra!');
 handles=guidata(handles.figure1);
 handles.din.harmonic=harm;
@@ -2365,12 +2369,14 @@ if isempty(G_fit)==0
         'verticalalignment','bottom','parent',a1,'color','m','fontweight','bold','userdata','mark');
     plot(a1,combine_spectra(:,1),primary(:,1),'m--','linewidth',1.5,'userdata','mark');
     plot(a2,combine_spectra(:,1),B_fit,'k-','linewidth',2,'userdata','mark');
+    hold(a3,'on');
+    plot(a3,G_fit,B_fit,'k-','userdata','mark');
     linkaxes([a1 a2],'x');
     uistack(a1,'up');
     bare_ref=get(handles.bare_table,'data');
     ref=[bare_ref(0.5*(harm+1),1),bare_ref(0.5*(harm+1),2)];
     harm_dataf=handles.din.(['harmf',num2str(harm)]);
-    harm_datag=handles.din.(['harmg',num2str(harm)]);
+    harm_datag=handles.din.(['harmg',num2str(harm)]);    
     str={['\bf f: ',num2str(G_parameters(1)),' Hz'],...
         ['\bf\Deltaf: ',num2str(G_parameters(1)-ref(1)),' Hz'],...
         ['\bf\Deltaf_c_o_r_r_e_c_t_i_o_n: ',...
@@ -2385,7 +2391,7 @@ if isempty(G_fit)==0
         delete(d);
     end
     txt=text(1,1,' ');
-    set(txt,'parent',a2,'units','normalized','position',[0.7 0.9 0],'string',str);
+    set(txt,'parent',a2,'units','normalized','position',[0.7 0.9 0],'string',str,'userdata','mark');
     handles.raw.current_Gparameters=G_parameters;
     handles.raw.current_Bparameters=B_parameters;
     handles.raw.Glsq=G_l_sq;
@@ -2438,10 +2444,17 @@ guidata(handles.figure1,handles);%update the handles structure
 %save the changes into the imported .mat file
 pathname=handles.din.filepath;
 filename=handles.din.filename;
-export=matfile([pathname,filename],'writable',true);
-export.freq_shift=handles.din.rawdata.freq_shift;
-export.abs_freq=handles.din.rawdata.abs_freq;
-export.chisq_values=handles.din.rawdata.chisq_values;
+freq_shift=handles.din.rawdata.freq_shift;
+abs_freq=handles.din.rawdata.abs_freq;
+chisq_values=handles.din.rawdata.chisq_values;
+freq_shift_ref=handles.din.rawdata.freq_shift_ref;
+reference=handles.din.rawdata.reference;
+version=handles.din.rawdata.version;
+save([pathname,filename],'freq_shift','abs_freq','chisq_values','freq_shift_ref','reference','version');
+% export=matfile([pathname,filename],'writable',true);
+% export.freq_shift=handles.din.rawdata.freq_shift;
+% export.abs_freq=handles.din.rawdata.abs_freq;
+% export.chisq_values=handles.din.rawdata.chisq_values;
 % export.(['mod_',datestr(now,'yyyy_mm_dd_HH_MM_SS')])={['Modifications made on datapoint: ',num2str(index)],...
 %     ['Modification performed on: ',date],...
 %     ['Program versions: ',get(handles.text4,'string')]};
@@ -2634,7 +2647,7 @@ switch get(guess_values_options,'value')
             [G_fit,G_parameters,G_l_sq,B_fit,B_parameters,B_l_sq]=fit_spectra(handles,[freq,conductance,susceptance],guess,I);
             combine_spectra=[freq,conductance,susceptance,G_fit,B_fit,G_l_sq,B_l_sq];%put everything in one variable
         catch% tryGuess values based on the Derivative of the Fit
-            disp('Fitting based on the Gmax guess  failed!!');
+            disp('Fitting based on the Bmax guess  failed!!');
             disp('Attempting to use derivative values to fit...');
             [p,freq_mod,modulus,~,~]=deriv_guess(freq,conductance,susceptance,handles,a4);
             if isempty(p)==1
@@ -2698,7 +2711,7 @@ switch get(guess_values_options,'value')
                 guess=[guess(1,1),guess(2,1),guess(3,1),guess(4,1),guess(5,1),guess(1,2),...
                     guess(2,2),guess(3,2),guess(4,2),guess(5,2),guess(6,1),guess(6,2)];%reformat the guess array
                 %set the number of peaks to fit to 2
-                handles.prefs.num_peaks(handles.din.harmonic,3)=3;
+                handles.prefs.num_peaks(handles.din.harmonic)=2;
                 guidata(handles.figure1,handles);
                 try% tryGuess values based on user-input values
                     [G_fit,G_parameters,G_l_sq,B_fit,B_parameters,B_l_sq]=fit_spectra(handles,[freq,conductance,susceptance],guess,I);
@@ -2753,7 +2766,7 @@ switch get(guess_values_options,'value')
                     guess(2,2),guess(3,2),guess(4,2),guess(5,2),...
                     guess(1,3),guess(2,3),guess(3,3),guess(4,3),guess(5,3),guess(6,1),guess(6,2),guess(6,3)];%reformat the guess array
                 %set the number of peaks to fit to 3                
-                handles.prefs.num_peaks(handles.din.harmonic,3)=3;
+                handles.prefs.num_peaks(handles.din.harmonic)=3;
                 guidata(handles.figure1,handles);
                 try% tryGuess values based on user-input values
                     [G_fit,G_parameters,G_l_sq,B_fit,B_parameters,B_l_sq]=fit_spectra(handles,[freq,conductance,susceptance],guess,I);
