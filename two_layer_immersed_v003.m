@@ -1851,7 +1851,10 @@ handles.din.solved.(name).norm_delfstar=master(handles.din.solved.(name).d2lam,s
 if sum([nc1==n1,nc2==n1,nc3==n1])==0||handles.din.simulate==1%if n1 is not one of the harmonics that are being used to calculate the viscoeasltic parameters, use the calculated areal mass at nc1 to predict the frequency shift. 
     %This prevents the predicted freq shift from being the same as the exp. freq shift    
     name0=['n_',num2str(nc1),'_',num2str(nc1),num2str(nc2),num2str(nc3)];%nomenclature: n_<n1>_<harm used to calc properties>
-    handles.din.solved.(name).drho=handles.din.solved.(name0).drho;%calculate drho for harmonic nc1 that was used in g/m^2    
+    if handles.din.simulate==1&&isfield(handles.din.solved,name0)==1
+        handles.din.solved.(name).drho=handles.din.solved.(name0).drho;%calculate drho for harmonic nc1 that was used in g/m^2    
+    else        
+    end
 else 
     handles.din.solved.(name).drho=drho_calc(handles.din.cursor.(['interp_harmfi',num2str(n1)]),zq,f1,n1,handles.din.solved.(name).norm_delfstar).*1000;%calculate drho for each harmonic that was used in g/m^2    
 end%if sum([nc1==n1,nc2==n1,nc3==n1])==0
