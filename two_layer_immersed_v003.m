@@ -475,8 +475,8 @@ diss_ratio_exp=del_g_n3./del_f_n3;%experimental dissipation ratio
 f_n1=f1*n1;%resonant frequency at n1 in Hz
 f_n2=f1*n2;%resonant frequency at n2 in Hz
 f_n3=f1*n3;%resonant frequency at n3 in Hz
-if get(handles.edit_drho,'value')==0% if the manual guess for drho has been disabled
-    guess_table=get(handles.uitable4,'data');
+guess_table=get(handles.uitable4,'data');
+if get(handles.edit_drho,'value')==0% if the manual guess for drho has been disabled    
     try
         drho_n1=drho_est(handles.din.cursor.(['interp_harmfi',num2str(n1)]),n1,f1,zq);%areal mass calc. based on harmonic n1 (not used)
         drho_n2=drho_est(handles.din.cursor.(['interp_harmfi',num2str(n2)]),n2,f1,zq);%areal mass calc. based on harmonic n2
@@ -1715,7 +1715,8 @@ for dum0=1:length(radiotot)
         output.jacobian=jacobian;%store the jacobian matrix from fsolve
         output.exitflag=exitflag;%store the exitflag that was outputed from fsolve
         disp(['exitflag: ',num2str(exitflag),', resnorm: ',num2str(resnorm),', # of pts solved: ',num2str(count),', dataset: ',num2str(n1),num2str(n2),num2str(n3)]);
-        if exitflag~=1&&resnorm>7e-5%stop the code if the exitflag is not 1 or if the sum of the squares of the residuals are greater than 1e-10
+        disp(solved);
+        if exitflag~=1&&resnorm>0.0001%stop the code if the exitflag is not 1 or if the sum of the squares of the residuals are greater than 1e-10
             set(handles.status,'string','Status: Exitflag is not 1!','backgroundcolor','y','foregroundcolor','r');
             disp('Exitflag is not 1!');
             return
@@ -2040,7 +2041,7 @@ for dum0=1:length(radiotot)
     z_star_liq_n=zqliq_n_calc(dfliq_n,dgliq_n,f1,zq);%calc the liq load impedance at dgliq_harm
     dgliq_harm=str2double(get(handles.dgliq_harm,'string'));%harmonic in which the liq load impedance was calc at
     [n1,n2,n3]=determine_harm_choice(harmchoice(dum0));%determine what harmonic datasets will be used to calculate viscoelastic parameters    
-    unique_n=1:2:51;
+    unique_n=1:2:11;
     for dum=1:length(unique_n)
         name=['n_',num2str(unique_n(dum)),'_',num2str(n1),num2str(n2),num2str(n3)];%nomenclature: n_<harmonic in which values are calc. at>_<harm used to calc properties>
         handles.din.solved.(name).drho=drho;
