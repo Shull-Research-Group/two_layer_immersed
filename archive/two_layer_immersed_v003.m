@@ -88,18 +88,6 @@ if isfield(handles.din,'filepath')==false
 end
 handles.din.constants.f1=5e6;%fundamental resonance frequency in Hz
 handles.din.constants.zq=8.84e6; %load impedance of quartz, kg/m^2-s
-handles.din.constants.del_f_1_e=10;%default error (Hz) 
-handles.din.constants.del_f_3_e=30;%default error (Hz) 
-handles.din.constants.del_f_5_e=50;%default error (Hz) 
-handles.din.constants.del_f_7_e=70;%default error (Hz)
-handles.din.constants.del_f_9_e=90;%default error (Hz)
-handles.din.constants.del_f_11_e=110;%default error (Hz)
-handles.din.constants.del_g_1_e=10;%default error (Hz)
-handles.din.constants.del_g_3_e=30;%default error (Hz)
-handles.din.constants.del_g_5_e=50;%default error (Hz) 
-handles.din.constants.del_g_7_e=70;%default error (Hz)
-handles.din.constants.del_g_9_e=90;%default error (Hz)
-handles.din.constants.del_g_11_e=110;%default error (Hz)
 handles.din.rawdata.immersed_freq=[];
 handles.din.rawdata.immersed_diss=[];
 handles.din.simulate=0;
@@ -121,10 +109,15 @@ handles.prefs.peak_min(7)=.2;%min. peak finding threshold for the 7th harmonic
 handles.prefs.peak_min(9)=.2;%min. peak finding threshold for the 9th harmonic
 handles.prefs.peak_min(11)=.2;%min. peak finding threshold for the 11th harmonic
 handles.prefs.simul_peak=1;
-for dum=1:6
-    name1=['del_f_',num2str(dum*2-1),'_e'];
-    name2=['del_g_',num2str(dum*2-1),'_e'];
-    data(dum,:)=[handles.din.constants.(name1),handles.din.constants.(name2)];
+data=zeros(6,6);
+for dum=1:12
+    for dum1=1:12
+        if dum1==dum&&mod(dum,2)==1
+            data(dum,dum1)=(dum*2-1)*10;
+        elseif dum1==dum&&mod(dum,2)==0
+            data(dum,dum1)=((dum-1)*2-1)*10;
+        end
+    end
 end
 set(handles.error_values,'userdata',data);
 handles.din.contour.label=0;%default flag for the harm and diss ratios
@@ -139,10 +132,11 @@ handles.din.contour.diss_ratio_calc=ones(handles.din.contour.res,handles.din.con
 handles.din.qcm_map=ones(handles.din.contour.res,handles.din.contour.res);%allocate the matrix for the qcm map
 handles.din.grho_state=1;
 handles.din.d2lam_state=0;
-handles.din.fit_options=optimset('Display','off','tolfun',1e-11,'tolx',1e-11,'Maxiter',100000,'MaxFunEvals',100000);
+handles.din.fit_options=optimset('Display','off','tolfun',1e-11,'tolx',1e-11,'Maxiter',10000000,'MaxFunEvals',10000000);
 set(handles.viewraw,'userdata',[],'tooltipstring',['view raw spectra']);
 set(handles.harm1,'value',1);
 set(handles.harm3,'value',1);
+set(handles.harm5,'value',1);
 set(handles.radio2,'value',1);
 set(handles.dgliq,'string',1000);%set default value for dgliq
 set(handles.dgliq_harm,'string',3);%set default value for dgliq_harm
@@ -454,7 +448,7 @@ set(handles.status,'string','Status: Generating contour plots...','backgroundcol
 disp('Generating contour plots...');
 res=handles.din.contour.res;%number of datapoints in the x and y direction of the plot
 phi_var=linspace(0,90,res);%define range of phi vales
-d2lam_var=linspace(0,1,res);%define range of d2lam values
+d2lam_var=linspace(0,0.2,res);%define range of d2lam values
 harm_ratio_calc=handles.din.contour.harm_ratio_calc;
 diss_ratio_calc=handles.din.contour.diss_ratio_calc;
 f1=handles.din.constants.f1;%fundamental resonance freq
@@ -623,7 +617,7 @@ if pos(3)<=800
 end%if pos(3)<=0.71
 drawnow;
 s1=subplot(1,2,1);%plot the harmonic ratio map
-contourf(d2lam_var,phi_var,harm_ratio_calc,linspace(-3,3,res),'edgecolor','none');
+contourf(d2lam_var,phi_var,harm_ratio_calc,linspace(0,1,res),'edgecolor','none');
 xlabel(s1,['d/\lambda_',num2str(handles.din.n_ref)],'fontweight','bold','fontsize',14);
 ylabel(s1,'\phi (deg.)','fontweight','bold','fontsize',14);
 t1=title([num2str(n1),'\Deltaf_',num2str(n2),'/',num2str(n2),'\Deltaf_',num2str(n1)],'fontweight','bold','fontsize',14);
@@ -632,7 +626,7 @@ set(c1,'fontsize',12);
 set(s1,'fontsize',14);
 drawnow;
 s2=subplot(1,2,2);%plot the dissipation ratio map
-contourf(d2lam_var,phi_var,diss_ratio_calc,linspace(-3,3,res),'edgecolor','none');
+contourf(d2lam_var,phi_var,diss_ratio_calc,linspace(-1.1,0,res),'edgecolor','none');
 xlabel(s2,['d/\lambda_',num2str(handles.din.n_ref)],'fontweight','bold','fontsize',14);
 ylabel(s2,'\phi (deg.)','fontweight','bold','fontsize',14);
 t2=title(['\Delta\Gamma_',num2str(n3),'/\Deltaf_',num2str(n3)],'fontweight','bold','fontsize',14);
@@ -752,7 +746,7 @@ disp('Generating QCM maps...');
 qcm_map=handles.din.qcm_map;
 res=handles.din.contour.res;%number of datapoints in the x and y direction of the plot
 phi_var=linspace(0,90,res);%define range of phi vales
-d2lam_var=linspace(0,0.5,res);%define range of d2lam values
+d2lam_var=linspace(0,0.01,res);%define range of d2lam values
 f1=handles.din.constants.f1;%fundamental resonance freq
 zq=handles.din.constants.zq;%quartz  load impedance
 f_n=f1*str2double(get(handles.dgliq_harm,'string'));
@@ -803,21 +797,21 @@ if pos(3)<=800
     set(ff,'position',[pos(1)*.5 pos(2) pos(3)*2 pos(4)]);
 end%if pos(3)<=0.71
 s1=subplot(1,2,1);%plot the real component
-contourf(d2lam_var,phi_var,real(qcm_map),linspace(-3,3,300),'edgecolor','none');hold on;
+contourf(d2lam_var,phi_var,real(qcm_map),linspace(-1.1,-.9,300),'edgecolor','none');hold on;
 xlabel(s1,'d/\lambda_n','fontweight','bold','fontsize',12);
 ylabel(s1,'\phi (deg.)','fontweight','bold','fontsize',12);
 title(['\Deltaf_n','/\Deltaf_s_',num2str(n)],'fontweight','bold','fontsize',12);
 colormap(jet); colorbar;
 waitbar(.95,h);
 s2=subplot(1,2,2);%plot the imaginary component
-contourf(d2lam_var,phi_var,imag(qcm_map),linspace(-3,3,300),'edgecolor','none');hold on;
+contourf(d2lam_var,phi_var,imag(qcm_map),linspace(0,0.1,300),'edgecolor','none');hold on;
 xlabel(s2,'d/\lambda_n','fontweight','bold','fontsize',12);
 ylabel(s2,'\phi (deg.)','fontweight','bold','fontsize',12);
 title(['\Delta\Gamma_n','/\Deltaf_s_',num2str(n)],'fontweight','bold','fontsize',12);
 colormap(jet); colorbar;
 waitbar(1,h);
 cf=z_star_liq_n/(drho_ave*f_n);
-set(ff,'name',['drho=',num2str(drho_ave),'g/m^2  cf=',num2str(cf)]);
+set(ff,'name',['drho=',num2str(drho_ave.*1000),'g/m^2  cf=',num2str(cf)]);
 set(handles.status,'string','Status: Plot succesfully generated!','foregroundcolor','r','backgroundcolor','k');
 if get(handles.qcm_map_sol,'value')==1%plot solutions if the option to do so is turned on
     [L_string]=plot_d2lam_phi(handles,handles.din.n1,s1,s2);
@@ -1581,17 +1575,17 @@ function delfstar2layer=master2(Dn, Rliq)
 %Rliq: see function Rliq
 delfstar2layer=-((Dn.^-2)+(Rliq^2))./((cot(Dn)/Dn)+(Rliq));
 
-function harm_ratio_error=h_ratio_error(del_f_n2,del_f_n1,del_f_n1_e, del_f_n2_e,n1,n2)
+function harm_ratio_error=h_ratio_error(s_fn1,s_fn2,cov_fn1_fn2,del_f_n1,del_f_n2,n1,n2)
 %this function calculates the error assosciated with the harmonic ratio.
 %This error calculation is based on standard propagation of error. See
 %DeNolf et al. Langmuir, 2014 for more details on error analysis.
-harm_ratio_error=sqrt((((n1.*del_f_n2.*del_f_n1_e)./(n2.*(del_f_n1.^2))).^2)+(((n1.*del_f_n2_e)./(n2.*del_f_n1)).^2));
+harm_ratio_error=sqrt(((n2./n1).^2).*(1./(del_f_n2.^2)).*((s_fn1.^2)-2.*((del_f_n1./del_f_n2).^2).*cov_fn1_fn2+((del_f_n1./del_f_n2).^2).*(s_fn2.^2)));
 
-function diss_ratio_error=d_ratio_error(del_g_n3,del_f_n3,del_g_n3_e,del_f_n3_e)
+function diss_ratio_error=d_ratio_error(s_gn3,s_fn3,cov_gn3_fn3,del_g_n3,del_f_n3)
 %This function calcualtes the error associated with the dissipation ratio.
 %This error calculation is based on standard propgation of error. See
 %DeNolf et al. Langmuir, 2014 for more details on error analysis.
-diss_ratio_error=sqrt((((del_g_n3_e)./((del_f_n3))).^2)+(((del_g_n3.*del_f_n3_e)./(del_f_n3.^2)).^2));
+diss_ratio_error=(1./(del_f_n3.^2)).*(((del_g_n3./del_f_n3).^2).*(s_fn3.^2)-2.*((del_g_n3./del_f_n3).^2).*cov_gn3_fn3+((s_gn3).^2));
 
 function [harm_ratio_error,diss_ratio_error,handles]=calc_ratio_error(handles,n1,n2,n3,del_f_n2,del_f_n1,del_g_n3,del_f_n3)
 %This function calculates the error for the harmonic and dissipation error
@@ -1602,16 +1596,17 @@ function [harm_ratio_error,diss_ratio_error,handles]=calc_ratio_error(handles,n1
 %n3:  third harmonic dataset used to calcualte the dissipation ratio
 %calculate error in ratios
 data=get(handles.error_values,'userdata');
-del_f_n1_e=data((n1+1)/2,1);
-del_f_n2_e=data((n2+1)/2,1);
-del_g_n3_e=data((n3+1)/2,2);
-del_f_n3_e=data((n3+1)/2,1);
-% del_f_n1_e=handles.din.constants.(['del_f_',num2str(n1),'_e']);
-% del_f_n2_e=handles.din.constants.(['del_f_',num2str(n2),'_e']);
-% del_g_n3_e=handles.din.constants.(['del_g_',num2str(n3),'_e']);
-% del_f_n3_e=handles.din.constants.(['del_f_',num2str(n3),'_e']);
-harm_ratio_error=h_ratio_error(del_f_n2,del_f_n1,del_f_n1_e, del_f_n2_e,n1,n2);%error in the harmonic ratio
-diss_ratio_error=d_ratio_error(del_g_n3,del_f_n3,del_g_n3_e,del_f_n3_e);%error in the dissipation ratio
+errors=diag(data);
+s_fn1=errors(n1);
+s_fn2=errors(n2);
+s_fn3=errors(n3);
+s_gn1=errors(n1+1);
+s_gn2=errors(n2+1);
+s_gn3=errors(n3+1);
+cov_fn1_fn2=data(n1,n2);
+cov_gn3_fn3=data(n3+1,n3);
+harm_ratio_error=h_ratio_error(s_fn1,s_fn2,cov_fn1_fn2,del_f_n1,del_f_n2,n1,n2);%error in the harmonic ratio
+diss_ratio_error=d_ratio_error(s_gn3,s_fn3,cov_gn3_fn3,del_g_n3,del_f_n3);%error in the dissipation ratio
 
 
 function F=immersed_2layer_solver(handles,n1,n2,n3,n,z_star_liq_n,harm_ratio_exp,diss_ratio_exp,guess_values)
@@ -1854,6 +1849,7 @@ if sum([nc1==n1,nc2==n1,nc3==n1])==0||handles.din.simulate==1%if n1 is not one o
     if handles.din.simulate==1&&isfield(handles.din.solved,name0)==1
         handles.din.solved.(name).drho=handles.din.solved.(name0).drho;%calculate drho for harmonic nc1 that was used in g/m^2    
     else        
+        handles.din.solved.(name).drho=drho_calc(handles.din.cursor.(['interp_harmfi',num2str(n1)]),zq,f1,n1,handles.din.solved.(name).norm_delfstar).*1000;%calculate drho for each harmonic that was used in g/m^2    
     end
 else 
     handles.din.solved.(name).drho=drho_calc(handles.din.cursor.(['interp_harmfi',num2str(n1)]),zq,f1,n1,handles.din.solved.(name).norm_delfstar).*1000;%calculate drho for each harmonic that was used in g/m^2    
@@ -1974,10 +1970,11 @@ end
 
 % --- Executes on button press in error_values.
 function error_values_Callback(hObject, eventdata, handles)
-figure(99);clf(figure(99));pos=get(figure(99),'position');set(figure(99),'position',[pos(1) pos(2) 400 200]);
+figure(99);clf(figure(99));pos=get(figure(99),'position');set(figure(99),'position',[pos(1)-100 pos(2) 1100 300],...
+    'name','Covariance Matrix');
 t=uitable('parent',figure(99),'units','normalized','position',[0.05 0.05 0.9 0.9]);
-cnames=[{'f error (Hz)'},{'g_error (Hz)'}];
-rnames=[{'1st'},{'3rd'},{'5th'},{'7th'},{'9th'},{'11th'}];
+cnames=[{'del_f1'},{'del_g1'},{'del_f3'},{'del_g3'},{'del_f5'},{'del_g5'},{'del_f7'},{'del_g7'},{'del_f9'},{'del_g9'},{'del_f11'},{'del_g11'}];
+rnames=[{'del_f1'},{'del_g1'},{'del_f3'},{'del_g3'},{'del_f5'},{'del_g5'},{'del_f7'},{'del_g7'},{'del_f9'},{'del_g9'},{'del_f11'},{'del_g11'}];
 data=get(handles.error_values,'userdata');
 set(t,'columnname',cnames,'rowname',rnames,'data',data);
 set(t,'columneditable',[true true],'celleditcallback',{@store_error,handles});
@@ -2048,6 +2045,8 @@ for dum0=1:length(radiotot)
     for dum=1:length(unique_n)
         name=['n_',num2str(unique_n(dum)),'_',num2str(n1),num2str(n2),num2str(n3)];%nomenclature: n_<harmonic in which values are calc. at>_<harm used to calc properties>
         handles.din.solved.(name).drho=drho;
+    end
+    for dum=1:length(unique_n)        
         handles=calc_viscoelastic_par(handles,unique_n(dum),f1,z_star_liq_n,zq,[d2lam phi drho],dgliq_harm,name,n1);%calculate the viscoelastic parameters
         %store the calculated values in a matrix that will be used to output the results in the handles.uitable2
         calc_table((unique_n(dum)+1)/2,:)=[handles.din.solved.(name).drho,handles.din.solved.(name).grho,handles.din.solved.(name).phi,...
@@ -2087,9 +2086,9 @@ if isfield(handles.raw,'filename')==1&&isfield(handles.raw,'pathname');
         for dum=initial_time:solve_inc:extent
             handles=guidata(handles.figure1);
             timeline=handles.din.rawdata.freq_shift(:,1);
-            timepoint0=timeline(dum);
+            timepoint0=timeline(dum)
             event.Position(1)=timepoint0;
-            rawfit(handles,harm,event);
+            handles=rawfit(handles,harm,event);
             drawnow;
             h=guidata(findall(0,'type','figure','name','Refit panel'));
             h.guess_values_options.Value=4;
@@ -2934,18 +2933,21 @@ elseif handles.prefs.simul_peak==1%run this block of code if the fitting G and B
         G_residual=GB_residual(:,1);             B_residual=GB_residual(:,2);
         G_l_sq=(G_residual.^2)./(length(freq)-1);%chi-squared calculation
         B_l_sq=(B_residual.^2)./(length(freq)-1);%chi-squared calculation
-        [G_parameters,B_parameters]=par_check(G_parameters,B_parameters);
+        [G_parameters,B_parameters]=par_check(G_parameters,B_parameters,freq);
     catch
         G_fit=nan(size(freq,1),size(freq,2));   G_parameters=nan(1,5);  G_l_sq=G_fit;
         B_fit=nan(size(freq,1),size(freq,2));   B_parameters=nan(1,5);  B_l_sq=B_fit;
     end
 end%if handles.prefs.simul_peak==0
 
-function [G_parameters,B_parameters]=par_check(G_parameters,B_parameters)
+function [G_parameters,B_parameters]=par_check(G_parameters,B_parameters,freq)
 %this function checks to see that the first 5 values in the parmeters
 %variable is the most left one, representing the harmonic peak
 if length(G_parameters)==10
-    if G_parameters(1)>G_parameters(6)
+    if G_parameters(1)-G_parameters(2)<0.9*min(freq)
+        G_parameters=[G_parameters(6:10),G_parameters(1:5)];
+        B_parameters=[B_parameters(6:10),B_parameters(1:5)];
+    elseif G_parameters(1)>G_parameters(6)
         G_parameters=[G_parameters(6:10),G_parameters(1:5)];
         B_parameters=[B_parameters(6:10),B_parameters(1:5)];
     end%if G_parameters(1)>G_parameters(5)
@@ -2974,8 +2976,8 @@ function [fitted_y,residual,parameters]=fit_spectra_con(x0,freq_data,y_data,I,sh
 %Variables, 'lb' and 'ub', defines the lower and upper bound of each of the
 %guess_paramters. Both 'lb' and 'ub' are 1x5 array.
 if nargin==5
-    lb=[0 0 -inf -90 -100];
-    ub=[Inf Inf 90 100 100];
+    lb=[0 0 -90 -inf -200];
+    ub=[Inf Inf 90 100 200];
 end%if nargin==5
 options=optimset('display','off','tolfun',1e-10,'tolx',1e-10);
 [parameters, ~, ~]=lsqcurvefit(@lfun4c,x0,freq_data(I),y_data(I),lb,ub,options);%use lsqcurvefit function to fit the spectra data to a Lorentz curve
@@ -3021,8 +3023,8 @@ function [fitted_y,residual,parameters]=fit_spectra_both(x0,freq_data,conductanc
 %lb: lower bound
 %ub: upper bound
 if nargin==7
-    lb=[.999*min(freq_data) 0 -180 0 -100];
-    ub=[1.001*max(freq_data) 2*(max(freq_data)-min(freq_data)) 180 100 100];
+    lb=[.999*min(freq_data) 0 -180 0 -200];
+    ub=[1.001*max(freq_data) 2*(max(freq_data)-min(freq_data)) 180 200 200];
 end%if nargin==6
 options=optimset('display','off','tolfun',1e-10,'tolx',1e-10,'MaxFunEvals',3e4,'maxiter',3e3);
 if length(x0)==6%fitting code for one peak
