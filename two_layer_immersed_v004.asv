@@ -660,7 +660,7 @@ disp('Generating QCM maps...');
 qcm_map=handles.din.qcm_map;
 res=handles.din.contour.res;%number of datapoints in the x and y direction of the plot
 phi_var=linspace(0,90,res);%define range of phi vales
-d2lam_var=linspace(0,1,res);%define range of d2lam values
+d2lam_var=linspace(0,0.25,res);%define range of d2lam values
 f1=handles.din.constants.f1;%fundamental resonance freq
 zq=handles.din.constants.zq;%quartz  load impedance
 f_n=f1*str2double(get(handles.dgliq_harm,'string'));
@@ -712,10 +712,9 @@ if pos(3)<=800
     set(ff,'position',[pos(1)*.5 pos(2) pos(3)*2 pos(4)]);
 end%if pos(3)<=0.71
 s1=subplot(1,2,1);%plot the real component
-contourf(d2lam_var,phi_var,real(qcm_map),[-logspace(-2,2,500),logspace(-2,0,500)],'edgecolor','none');hold on;
-decay2lambda=@(x) cotd(x./2)./(2.*pi);
-plot(s1,decay2lambda(phi_var),phi_var,'k--');
-set(s1,'xlim',[0 d2lam_var(end)]);
+contourf(d2lam_var,phi_var,real(qcm_map),-logspace(-2,2,500),'edgecolor','none');hold on;
+decay2lambda=@(x) cot(x./2).*(2.*pi);
+plot(d2lam_var,decay2lambda(phi_var),'w--');
 xlabel(s1,'d/\lambda_n','fontweight','bold','fontsize',12);
 ylabel(s1,'\phi (deg.)','fontweight','bold','fontsize',12);
 title(['\Deltaf_n','/\Deltaf_s_n'],'fontweight','bold','fontsize',12);
@@ -723,15 +722,13 @@ colormap(jet); colorbar;
 waitbar(.95,h);
 s2=subplot(1,2,2);%plot the imaginary component
 contourf(d2lam_var,phi_var,imag(qcm_map),logspace(-10,0,500),'edgecolor','none');hold on;
-plot(s2,decay2lambda(phi_var),phi_var,'k--');
-set(s2,'xlim',[0 d2lam_var(end)]);
 xlabel(s2,'d/\lambda_n','fontweight','bold','fontsize',12);
 ylabel(s2,'\phi (deg.)','fontweight','bold','fontsize',12);
 title(['\Delta\Gamma_n','/\Deltaf_s_n'],'fontweight','bold','fontsize',12);
 cmap=colormap(jet);
 % cmap=[ones(1000,3).*cmap(1,:);cmap];
 % colormap(s1,cmap);
-caxis(s1,[-2 0.5])
+caxis(s1,[-2 0  ])
 colorbar;
 waitbar(1,h);
 cf=z_star_liq_n/(drho_ave*f_n);

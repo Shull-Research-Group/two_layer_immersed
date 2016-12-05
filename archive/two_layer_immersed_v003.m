@@ -639,33 +639,16 @@ set(handles.status,'string','Status: Plot succesfully generated!','foregroundcol
 
 %plot the solutions
 if get(handles.qcm_map_sol,'value')==1
-    sol1=axes;%plot the harmonic ratio solutions    
-    plot(sol1,d2lam_dsol,phi_dsol,'.','color','g','linewidth',2);hold(sol1,'on');
-    plot(sol1,d2lam_hsol,phi_hsol,'k.','linewidth',2);
-    plot(sol1,d2lam_dhsol,phi_dhsol,'m.','linewidth',2);
-    sol2=axes;%plot the dissipation ratio solutions
-    plot(sol2,d2lam_hsol,phi_hsol,'k.','linewidth',2);hold(sol2,'on');
-    plot(sol2,d2lam_dsol,phi_dsol,'.','color','g','linewidth',2);
-    plot(sol2,d2lam_dhsol,phi_dhsol,'m.','linewidth',2);    
-    %modify the title text for each subplot
-    if n1~=1%write out the title text for the harmonic ratio
-        set(t1,'interpreter','latex','string',...
-            ['\sffamily$\bf\frac{',num2str(n1),'\Delta f_',num2str(n2),'}{',num2str(n2),'\Delta f_',num2str(n1),...
-            '}$ = ',num2str(harm_ratio_exp),'$\pm$',num2str(harm_ratio_error)]);
-    elseif n1==1
-        set(t1,'interpreter','latex','string',...
-            ['\sffamily$\bf\frac{\Delta f_',num2str(n2),'}{',num2str(n2),'\Delta f_',num2str(n1),...
-            '}$ = ',num2str(harm_ratio_exp),' $\pm$ ',num2str(harm_ratio_error)]);
-    end%if n1~=1
-    set(t2,'interpreter','latex','string',...
-        ['\sffamily$\bf\frac{\Delta \Gamma _',num2str(n3),'}{\Delta f_',num2str(n3),...
-        '}$ = ',num2str(diss_ratio_exp),' $\pm$ ',num2str(diss_ratio_error)]);
-    pause(1);
-    linkaxes([s1,s2, sol1, sol2],'xy');
-    set(sol1,'color','none','position',get(s1,'position'),'xlim',get(s1,'xlim'),'ylim',get(s2,'ylim'),'fontsize',14);
-    set(sol2,'color','none','position',get(s2,'position'),'xlim',get(s2,'xlim'),'ylim',get(s2,'ylim'),'fontsize',14);
-    
-end%if get(handles.qcm_map_sol,'value')==1s
+hold(s1,'on');
+contour(s1,d2lam_var,phi_var,harm_ratio_calc,[harm_ratio_exp-harm_ratio_error harm_ratio_exp+harm_ratio_error],'edgecolor','k','linestyle','-');
+contour(s1,d2lam_var,phi_var,diss_ratio_calc,[diss_ratio_exp-diss_ratio_error diss_ratio_exp+diss_ratio_error],'edgecolor','k','linestyle','--');
+hold(s2,'on');
+contour(s2,d2lam_var,phi_var,harm_ratio_calc,[harm_ratio_exp-harm_ratio_error harm_ratio_exp+harm_ratio_error],'edgecolor','k','linestyle','-');
+contour(s2,d2lam_var,phi_var,diss_ratio_calc,[diss_ratio_exp-diss_ratio_error diss_ratio_exp+diss_ratio_error],'edgecolor','k','linestyle','--');
+t1.String=[t1.String,' = ',num2str(harm_ratio_exp),'\pm',num2str(harm_ratio_error)];
+t2.String=[t2.String,' = ',num2str(diss_ratio_exp),'\pm',num2str(diss_ratio_error)];
+end%if get(handles.qcm_map_sol,'value')==1
+linkaxes([s1 s2],'xy');
 drawnow
 disp('Plot succesfully generated');
 
