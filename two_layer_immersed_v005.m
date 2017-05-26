@@ -4,7 +4,7 @@ function varargout = two_layer_immersed_v005(varargin)
 % TWO_LAYER_IMMERSED_V005 MATLAB code for two_layer_immersed_v005.fig
 %      TWO_LAYER_IMMERSED_V005, by itself, creates a new TWO_LAYER_IMMERSED_V005 or raises the existing
 %      singleton*.
-%
+%2
 %      H = TWO_LAYER_IMMERSED_V005 returns the handle to a new TWO_LAYER_IMMERSED_V005 or the handle to
 %      the existing singleton*.
 %
@@ -1555,8 +1555,8 @@ d2lam_n2_calc=@(d2lam_n1,n1,n2,phi) (d2lam_n1).*(n1./n2).^((phi./180)-1);%calcul
 sauerbrey=@(n,drho) (2.*n.*(f1.^2).*drho)./(zq);%calculates the sauerbbrey frequency shift
 zqliq_n2_calc=@(zqliq_n1,n1,n2) zqliq_n1.*sqrt(n2./n1);%calculates the liquid load impedance at harmonic n2
 delfnstar_liq_calc=@(z_star_liq_n) (1i.*f1.*z_star_liq_n)./(pi.*zq);%calculates the complex frequency shift of a bare qcm xtal in liquid
-Rliq_calc=@(delfnstar_liq,n,drho) (delfnstar_liq)./sauerbrey(n,drho);
-Dn_calc=@(d2lam,phi) 2.*pi.*d2lam.*(1-1i.*tand(phi./2));
+Rliq_calc=@(delfnstar_liq,n,drho) (delfnstar_liq)./sauerbrey(n,drho);% Given by Equation 12 from: Martin, E. J., Langmuir 31, 4008–4017 (2015).
+Dn_calc=@(d2lam,phi) 2.*pi.*d2lam.*(1-1i.*tand(phi./2));% Given by Equation 8 from: Martin, E. J., Langmuir 31, 4008–4017 (2015).
 drho_calc=@(df,n,norm_delfstar) -drho_est(df,n)./real(norm_delfstar);%calculates the drho values
 master2=@(Dn, Rliq) -((Dn.^-2)+(Rliq^2))./((cot(Dn)./Dn)+(Rliq));%master equation
 rh_calc=@(d2lam_n1,phi,drho,n1,n2,delfnstar_liq1,delfnstar_liq2) real(master2(Dn_calc(d2lam_n2_calc(d2lam_n1,n1,n1,phi),phi),Rliq_calc(delfnstar_liq1,n1,drho)))./...
@@ -1604,7 +1604,9 @@ for dum0=1:length(radiotot)
     handles.din.solved.harmchoice=harmchoice(dum0);
     [n1,n2,n3]=determine_harm_choice(harmchoice(dum0));%determine what harmonic datasets will be used to calculate viscoelastic parameters
     df_n1=handles.din.cursor.(['interp_harmfi',num2str(n1)]);%Df_n1
-    df_n2=handles.din.cursor.(['interp_harmfi',num2str(n2)]);%Df_n2        
+    dg_n1=handles.din.cursor.(['interp_harmgi',num2str(n1)]);%Dg_n1
+    df_n2=handles.din.cursor.(['interp_harmfi',num2str(n2)]);%Df_n2  
+    dg_n2=handles.din.cursor.(['interp_harmgi',num2str(n2)]);%Dg_n2
     dg_n3=handles.din.cursor.(['interp_harmgi',num2str(n3)]);%Dg_n3
     df_n3=handles.din.cursor.(['interp_harmfi',num2str(n3)]);%Df_n3
     
@@ -1642,6 +1644,34 @@ for dum0=1:length(radiotot)
             temp_cov(n2,n1) temp_cov(n2,n2) temp_cov(n2,n3) temp_cov(n2,n3+1);...
             temp_cov(n3,n1) temp_cov(n3,n2) temp_cov(n3,n3) temp_cov(n3,n3+1);...
             temp_cov(n3+1,n1) temp_cov(n3+1,n2) temp_cov(n3+1,n3) temp_cov(n3+1,n3+1)];
+        fit1=@(x) 10.^(1.2582.*log10(x)-3.338);% this is based on statistical estimates of error due to lsqnonlin
+        fit2=@(x) 10.^(1.330.*log10(x)-2.401);% this is based on statistical estimates of error due to unaccounted anharmonics for Df
+        fit3=@(x) 10.^(1.532.*log10(x)-3.192);% this is based on statistical estimate of error due ti unaccounted anharmonic for DG
+        if dg_n1>15000
+            saf1=fit2(dg_n1);
+            sag1=fit3(dg_n1);
+        else
+            saf1=0;
+            sag1=0;
+        end
+        if dg_n2>15000
+            saf2=fit2(dg_n2);
+            sag2=fit3(dg_n2);
+        else
+            saf2=0;
+            sag2=0;
+        end
+        if dg_n3>15000
+            saf3=fit2(dg_n3);
+            sag3=fit3(dg_n3);
+        else
+            saf3=0;
+            sag3=0;
+        end
+        covar1(1,1)=covar1(1,1)+fit1(dg_n1)+saf1;
+        covar1(2,2)=covar1(2,2)+fit1(dg_n2)+saf2;
+        covar1(3,3)=covar1(3,3)+fit1(dg_n3)+saf3;
+        covar1(4,4)=covar1(4,4)+fit1(dg_n3)+sag3;
         harm_ratio_exp=(n2./n1).*(df_n1./df_n2);%harmonic ratio from experiment
         diss_ratio_exp=dg_n3./df_n3;%dissipation ratio from experiment                        
         covariance_ratios=ratio_cov(covar1,df_n1,df_n2,df_n3,dg_n3,n2,n1,n2);%covariance matrix of the harm and diss ratio
@@ -2162,13 +2192,13 @@ try
             'xlim',[min(p1.XData) max(p1.XData)]);
         set(findall(figure(1),'type','axes','ycolor','r'),'ylim',[min(p2.YData)-0.05*range(p2.YData) max(p2.YData)+0.05*range(p2.YData)],...
             'xlim',[min(p1.XData) max(p1.XData)]);
-        set(figure(1),'name',[filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)]);
+        set(figure(1),'name',[filename(1:end-13),'  Raw data for n_',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)]);
     elseif flag==0
         delete(findall(figure(1),'type','line','marker','x'));
         p1=plot(h.a1,raw.(varname)(:,1),raw.(varname)(:,2),'bx','userdata','mark1');
         p2=plot(h.a2,raw.(varname)(:,1),raw.(varname)(:,3),'rx','userdata','mark2');  
         set(figure(1),'position',[pos(1) pos(2) 0.333 0.4],'name',...
-            [filename,'  View raw data for n=',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
+            [filename(1:end-13),'  Raw data for n_',num2str(harm),', ',num2str(event.Position(1)),' min',' index: ',num2str(ind)],...
         'numbertitle','off');
         pos2=get(h.a1,'position');
         set(h.a1,'ycolor','b','position',[0.11 pos2(2:4)],'color','none',...
@@ -2334,6 +2364,18 @@ if isempty(G_fit)==0
     assignin('base','G_parameters',G_parameters);
     assignin('base','B_parameters',B_parameters);
     assignin('base','Parameter_labels',par_labels);
+    %%
+%     harm=handles.din.harmonic;
+%     index=handles.raw.index;
+%     filename=handles.din.filename;
+%     [~,filename,~]=fileparts(filename);
+%     filename2=['F:\Dropbox\Research - Yeh 2\Thesis\Chapter 2 COMSOL simulations\MATLAB\rawdata\estimate fit error\figs_mats\pa\',...
+%         filename,'_',num2str(harm),'_',num2str(index)];
+%     save([filename2,'.mat'],'G_parameters','B_parameters','par_labels');    
+%     fig1=copyobj(figure(1),0);
+%     saveas(fig1,[filename2,'.fig']);
+%     delete(fig1);
+    %%
     disp('Fitting parameters have been exported to the workspace.');
     disp('Current fitting parameters (row 1: G_par, row2: B_par):');
     disp(par_labels);
@@ -2436,7 +2478,7 @@ delete(figure(1));
 
 function [G_fit,B_fit,G_l_sq,B_l_sq,combine_spectra,G_parameters,B_parameters,handles,I]=Lorentzian_dynamic_fit(handles,freq,conductance,susceptance,combine_spectra,guess_values_options,a4)
 % factor_range_fit=handles.din.fit_factor_range;
-factor_range_fit=5;
+factor_range_fit=7;
 handles.guess_values_options=guess_values_options;
 %make sure to change user-defined values to previous values if the user is
 %conducting the measurements. This prevents the program from pausing and
@@ -2859,17 +2901,17 @@ elseif handles.prefs.simul_peak==1%run this block of code if the fitting G and B
                 lb=[.999.*G_prev(1) .6.*G_prev(2) G_prev(3)-.6.*abs(G_prev(3)) 0 -200 -100];
                 ub=[1.001.*G_prev(1) 1.6.*G_prev(2) G_prev(3)+1.6.*abs(G_prev(3)) 200 200];
             elseif length(G_prev)==10
-                lb=[.9999.*G_prev(1) .8.*G_prev(2) G_prev(3)-.8.*abs(G_prev(3)) 0 -200,...
-                    .9999.*G_prev(6) .8.*G_prev(7) G_prev(8)-.8.*abs(G_prev(8)) 0 -200, -100, -100];
+                lb=[.999.*G_prev(1) .8.*G_prev(2) G_prev(3)-.8.*abs(G_prev(3)) 0 -200,...
+                    .999.*G_prev(6) .8.*G_prev(7) G_prev(8)-.8.*abs(G_prev(8)) 0 -200, -100, -100];
                 ub=[1.0001.*G_prev(1) 1.2.*G_prev(2) G_prev(3)+1.2.*abs(G_prev(3)) 200 200,...
                     1.0001.*G_prev(6) 1.2.*G_prev(7) G_prev(8)+1.2.*abs(G_prev(8)) 200 200 100, 100];
             elseif length(G_prev)==15
-                lb=[.999.*G_prev(1) .6.*G_prev(2) G_prev(3)-.6.*abs(G_prev(3)) 0 -200,...
-                    .999.*G_prev(6) .6.*G_prev(7) G_prev(8)-.6.*abs(G_prev(8)) 0 -200,...
-                    .999.*G_prev(11) .6.*G_prev(12) G_prev(13)-.6.*abs(G_prev(13)) 0 -200 -100 -100 -100];
-                ub=[1.001.*G_prev(1) 1.6.*G_prev(2) G_prev(3)+1.6.*abs(G_prev(3)) 200 200,...
-                    1.001.*G_prev(6) 1.6.*G_prev(7) G_prev(8)+1.6.*abs(G_prev(8)) 200 200,...
-                    1.001.*G_prev(11) 1.6.*G_prev(12) G_prev(13)+1.6.*abs(G_prev(13)) 200 200 100 100 100];
+                lb=[.99.*G_prev(1) .99.*G_prev(2) G_prev(3)-.99.*abs(G_prev(3)) 0 -200,...
+                    .999999.*G_prev(6) .99995.*G_prev(7) G_prev(8)-.99995.*abs(G_prev(8)) 0 -200,...
+                    .99.*G_prev(11) .95.*G_prev(12) G_prev(13)-.95.*abs(G_prev(13)) 0 -200 -100 -100 -100];
+                ub=[1.001.*G_prev(1) 1.005.*G_prev(2) G_prev(3)+1.00005.*abs(G_prev(3)) 200 200,...
+                    1.0001.*G_prev(6) 1.0005.*G_prev(7) G_prev(8)+1.0005.*abs(G_prev(8)) 200 200,...
+                    1.001.*G_prev(11) 1.005.*G_prev(12) G_prev(13)+1.005.*abs(G_prev(13)) 200 200 100 100 100];
             end
             [GB_fit,GB_residual,GB_parameters]=fit_spectra_both(guess,freq,conductance,susceptance,handles.prefs.num_peaks,I,handles,lb,ub);
         else
@@ -2935,7 +2977,7 @@ if nargin==5
     ub=[Inf Inf 90 100 200];
 end%if nargin==5
 options=optimset('display','off','tolfun',1e-10,'tolx',1e-10);
-[parameters, ~, ~]=lsqcurvefit(@lfun4c,x0,freq_data(I),y_data(I),lb,ub,options);%use lsqcurvefit function to fit the spectra data to a Lorentz curve
+[parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4c,x0,freq_data(I),y_data(I),lb,ub,options);%use lsqcurvefit function to fit the spectra data to a Lorentz curve
 fitted_y=lfun4c(parameters,freq_data);
 residual=fitted_y-y_data;
 if show_GB==1%checck to see whether or not to show the parameters
@@ -2959,7 +3001,7 @@ if nargin==5
     ub=[Inf Inf 90 100 100];
 end%if nargin==5
 options=optimset('display','off','tolfun',1e-10,'tolx',1e-10);
-[parameters, ~, ~]=lsqcurvefit(@lfun4s,x0,freq_data(I),susceptance_data(I),lb,ub,options);%use lsqcurvefit function to fit the spectra data to a Lorentz curve
+[parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4s,x0,freq_data(I),susceptance_data(I),lb,ub,options);%use lsqcurvefit function to fit the spectra data to a Lorentz curve
 fitted_y=lfun4s(parameters,freq_data);
 residual=fitted_y-susceptance_data;
 if show_GB==1%checck to see whether or not to show the parameters
@@ -2983,32 +3025,59 @@ if nargin==7
 end%if nargin==6
 options=optimset('display','off','tolfun',1e-10,'tolx',1e-10,'MaxFunEvals',3e4,'maxiter',3e3);
 if length(x0)==6%fitting code for one peak
+    disp('Fitting 1 peak');
     if handles.guess_values_options.Value==4&&nargin==9&&length(lb)==5&&length(ub)==6
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_1,x0,freq_data,[conductance susceptance],[lb],[ub],options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_1,x0,freq_data,[conductance susceptance],[lb],[ub],options);
     else
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_1,x0,freq_data,[conductance susceptance],[lb,-100],[ub,100],options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_1,x0,freq_data,[conductance susceptance],[lb,-100],[ub,100],options);
     end    
     fitted_y=lfun4_both_1(parameters,freq_data);
-    residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
-    disp('Fitting 1 peak');
+%     residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
+    temp=full(jacobian);
+    ci=nlparci(parameters,residual,'jacobian',temp);
+    if isnan(ci(1))==1||abs(ci(1))>1e6
+        disp('Removing 0s and 1s in jacobian');
+        ci=nlparci(parameters([1:4]),residual(:,1),'jacobian',temp(1:size(temp,1)/2,[1:4]));
+    end    
+    delta=diff(ci,1,2)./2;
+    assignin('base','delta',delta);
+    disp(['Delta_f: ',num2str(delta(1)) ,' Hz        ','Delta_G: ',num2str(delta(2)) ,' Hz']);      
 elseif length(x0)==12%fitting code for two peaks
+    disp('Fitting 2 peaks');
     if handles.guess_values_options.Value==4&&nargin==9&&length(lb)==12&&length(ub)==12
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_2,x0,freq_data,[conductance susceptance],lb,ub,options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_2,x0,freq_data,[conductance susceptance],lb,ub,options);
     else
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_2,x0,freq_data,[conductance susceptance],[lb lb -100 -100],[ub ub 100 100],options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_2,x0,freq_data,[conductance susceptance],[lb lb -100 -100],[ub ub 100 100],options);
     end
     fitted_y=lfun4_both_2(parameters,freq_data);
-    residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
-    disp('Fitting 2 peaks');
+%     residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
+    temp=full(jacobian);
+    ci=nlparci(parameters,residual,'jacobian',temp);
+    if isnan(ci(1))==1||abs(ci(1))>1e6
+        disp('Removing 0s and 1s in jacobian');
+        ci=nlparci(parameters([1:4,6:9]),residual(:,1),'jacobian',temp(1:size(temp,1)/2,[1:4,6:9]));
+    end    
+    delta=diff(ci,1,2)./2;
+    assignin('base','delta',delta);
+    disp(['Delta_f: ',num2str(delta(1)) ,' Hz        ','Delta_G: ',num2str(delta(2)) ,' Hz']);     
 elseif length(x0)==18%fitting code for three peaks
+    disp('Fitting 3 peaks');
     if handles.guess_values_options.Value==4&&nargin==9&&length(lb)==18&&length(ub)==18
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_3,x0,freq_data,[conductance susceptance],[lb],[ub],options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_3,x0,freq_data,[conductance susceptance],[lb],[ub],options);
     else
-        [parameters resnorm residual]=lsqcurvefit(@lfun4_both_3,x0,freq_data,[conductance susceptance],[lb,lb,lb,-100,-100,-100],[ub,ub,ub,100,100,100],options);
+        [parameters,resnorm,residual,exitflag,output,lambda,jacobian]=lsqcurvefit(@lfun4_both_3,x0,freq_data,[conductance susceptance],[lb,lb,lb,-100,-100,-100],[ub,ub,ub,100,100,100],options);
     end
     fitted_y=lfun4_both_3(parameters,freq_data);
-    residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
-    disp('Fitting 3 peaks');
+%     residual=[fitted_y(:,1)-conductance,fitted_y(:,2)-susceptance];
+    temp=full(jacobian);
+    ci=nlparci(parameters,residual,'jacobian',temp);
+    if isnan(ci(1))==1||abs(ci(1))>1e6
+        disp('Removing 0s and 1s in jacobian');
+        ci=nlparci(parameters([1:4,6:9,11:14]),residual(:,1),'jacobian',temp(1:size(temp,1)/2,[1:4,6:9,11:14]));
+    end    
+    delta=diff(ci,1,2)./2;
+    assignin('base','delta',delta);
+    disp(['Delta_f: ',num2str(delta(1)) ,' Hz        ','Delta_G: ',num2str(delta(2)) ,' Hz']);     
 end% if numpeaks==1
 
 function F_conductance = lfun4c(p,x)
